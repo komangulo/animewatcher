@@ -11,12 +11,6 @@
         android:id="@+id/videoview"
         android:layout_height="match_parent"
         />
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/as"
-        android:visibility="invisible">
 
 
-    </WebView>
-    </LinearLayout>
+ </LinearLayout>

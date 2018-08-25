@@ -1,6 +1,7 @@
 package com.stuffbox.webscraper;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.jsoup.Jsoup;
@@ -28,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mAnimeList = new ArrayList<>();
     private ArrayList<String> mSiteLink = new ArrayList<>();
     private ArrayList<String> mImageLink = new ArrayList<>();
+    String searchurl;
+    DataAdapter mDataAdapter;
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
 public static ArrayList<Bitmap> mImage=new ArrayList<>();
     @Override
@@ -35,6 +40,29 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new Description().execute();
+        final EditText editText=findViewById(R.id.edittext);
+        Button b=findViewById(R.id.ad);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+String y=editText.getText().toString();
+            Log.i("checking",y);
+StringBuffer s=new StringBuffer(y);
+for(int i=0;i<s.length();i++)
+{
+    if(s.charAt(i)==' ')
+    {
+        s.setCharAt(i,'%');
+    }
+}
+searchurl="https://www5.gogoanimes.tv//search.html?keyword="+s.toString();
+        Log.i("CHECKING",searchurl);
+Intent intent=new Intent(getApplicationContext(),AnimeFinder.class);
+intent.putExtra("searchingstring",searchurl);
+startActivity(intent);
+
+            }
+        });
 
     }
 
@@ -85,7 +113,7 @@ Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").
         @Override
         protected void onPostExecute(Void result) {
             RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
-            DataAdapter mDataAdapter = new DataAdapter(getApplicationContext(),MainActivity.this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);
+            mDataAdapter = new DataAdapter(getApplicationContext(),MainActivity.this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setDrawingCacheEnabled(true);
@@ -97,4 +125,5 @@ Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").
            mProgressDialog.dismiss();
         }
     }
+
 }

@@ -32,24 +32,24 @@ import okhttp3.HttpUrl;
  * Created by jasbe on 22-08-2018.
  */
 
-public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> {
+public class animefinderadapter extends RecyclerView.Adapter<animefinderadapter.MyViewHolder> {
 
     private ArrayList<String> mAnimeList = new ArrayList<>();
     private ArrayList<String> mSiteLink = new ArrayList<>();
-  //  private ArrayList<Bitmap> mImage = new ArrayList<>();
+    //  private ArrayList<Bitmap> mImage = new ArrayList<>();
     private ArrayList<String > mImageLink=new ArrayList<>();
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
     private Activity mActivity;
     private int lastPosition = -1;
-private Context context;
-   // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
-   public DataAdapter(Context context,MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
+    private Context context;
+    // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
+    public animefinderadapter(Context context,AnimeFinder activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
         this.mActivity = activity;
         this.mAnimeList = AnimeList;
         this.mSiteLink = SiteList;
         this.context=context;
-      //  this.mImage = ImageList;
-       this.mImageLink=ImageList;
+        //  this.mImage = ImageList;
+        this.mImageLink=ImageList;
         this.mEpisodeList=EpisodeList;
     }
 
@@ -64,8 +64,8 @@ private Context context;
             super(view);
             title = (TextView) view.findViewById(R.id.animename);
             episodeno = (TextView) view.findViewById(R.id.episodeno);
-           imageofanime=(ImageView) view.findViewById(R.id.img);
-           cardView=(CardView) view.findViewById(R.id.cardview);
+            imageofanime=(ImageView) view.findViewById(R.id.img);
+            cardView=(CardView) view.findViewById(R.id.cardview);
         }
     }
 
@@ -80,20 +80,8 @@ private Context context;
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.title.setText(mAnimeList.get(position));
-       holder.episodeno.setText(mEpisodeList.get(position));
+        holder.episodeno.setText(mEpisodeList.get(position));
         holder.animeuri= Uri.parse(mSiteLink.get(position));
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // WatchVideo.link=mSiteLink.get(position);
-
-                Intent intent=new Intent(context,WatchVideo.class);
-                intent.putExtra("link",mSiteLink.get(position));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                context.startActivity(intent);
-            }
-        });
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,16 +91,8 @@ private Context context;
                 context.getApplicationContext().startActivity(intent);
             }
         });
-holder.imageofanime.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-        Intent intent=new Intent(context,WatchVideo.class);
-        intent.putExtra("link",mSiteLink.get(position));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.getApplicationContext().startActivity(intent);
-    }
-});
-       // holder.imageofanime.setImageBitmap(mImage.get(position));
+
+        // holder.imageofanime.setImageBitmap(mImage.get(position));
         new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
         //    holder.imageofanime.setImageBitmap(getBitmapFromURL(mImageLink.get(position)));
         // holder.tv_blog_upload_date.setText(mBlogUploadDateList.get(position));

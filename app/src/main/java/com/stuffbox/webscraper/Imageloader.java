@@ -39,5 +39,6 @@ public class Imageloader  extends AsyncTask<Void, Void, Bitmap>{
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
         imageView.setImageBitmap(result);
+
     }
 }

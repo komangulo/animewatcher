@@ -242,7 +242,7 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
                         //       LinearLayout layout=findViewById(R.id.webview);
                       //         layout.addView(webView);
                  //             setContentView(webView);
-finish();
+//finish();
                                return false;
                            }
                        });

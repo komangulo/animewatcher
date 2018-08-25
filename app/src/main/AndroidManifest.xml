@@ -25,6 +25,7 @@
             android:configChanges="orientation|screenSize" >
 
         </activity>
+        <activity android:name=".AnimeFinder"></activity>
     </application>
 
 </manifest>
