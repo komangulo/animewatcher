@@ -54,26 +54,15 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                // Connect to the web site
                 org.jsoup.nodes.Document mBlogDocument = Jsoup.connect(url).get();
                 Log.i("soja",String.valueOf(mBlogDocument));
-                // Using Elements to get the Meta data
-          //      Elements mElementDataSize = mBlogDocument.select("div[class=author-date]");
                 Elements mElementDataSize=mBlogDocument.select("div[class=last_episodes loaddub]").select("ul[class=items]").select("li");
-                // Locate the content attribute
                 int mElementSize = mElementDataSize.size();
-
                 for (int i = 0; i < mElementSize; i++) {
-             //       Elements mElementAuthorName = mBlogDocument.select("span[class=vcard author post-author test]").select("a").eq(i);
-                //    String mAuthorName = mElementAuthorName.text();
                     Elements mElementAnimeName=mBlogDocument.select("p[class=name]").select("a").eq(i);
                     String mAnimenName= mElementAnimeName.text();
                     Log.i("zy",mAnimenName);
-             //       Elements mElementBlogUploadDate = mBlogDocument.select("span[class=post-date updated]").eq(i);
-                 //   String mBlogUploadDate = mElementBlogUploadDate.text();
-Elements mElementAnimeLink= mBlogDocument.select("p[class=name]").select("a");
-            //      Elements mElementBlogTitle = mBlogDocument.select("h2[class=entry-title]").select("a").eq(i);
-                 //   String mBlogTitle = mElementBlogTitle.text();
+Elements mElementAnimeLink= mBlogDocument.select("p[class=name]").select("a").eq(i);
 String mlink=mElementAnimeLink.attr("abs:href");
 Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").eq(2*i);
                     String imagelink=mElementImageLink.attr("src");
@@ -95,15 +84,8 @@ Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").
 
         @Override
         protected void onPostExecute(Void result) {
-            // Set description into TextView
-
             RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
-//for(int i=0;i<mImageLink.size();i++)
-   // new Imageloader(mImageLink.get(i)).execute();
-//Log.i("size",String.valueOf(Imageloader.image.size()));
-//mImage=Imageloader.image;
-         //   DataAdapter mDataAdapter = new DataAdapter(MainActivity.this, mAnimeList, mSiteLink, mImage,mEpisodeList);
-            DataAdapter mDataAdapter = new DataAdapter(MainActivity.this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);
+            DataAdapter mDataAdapter = new DataAdapter(getApplicationContext(),MainActivity.this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setDrawingCacheEnabled(true);
