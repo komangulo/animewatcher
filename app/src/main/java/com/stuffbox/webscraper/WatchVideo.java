@@ -169,8 +169,9 @@ public class WatchVideo extends Activity {
                     for(int i=0;i<containedUrls.size();i++)
                        Log.i("Checkblabla",containedUrls.get(i));
                     //Log.i("Checkblabla",containedUrls.get(3));
-
-                    org.jsoup.nodes.Document videostreamlink=Jsoup.connect(containedUrls.get(3)).get();
+if(containedUrls.size()==0)
+    Toast.makeText(context,"cannot play video")
+                    org.jsoup.nodes.Document videostreamlink=Jsoup.connect(containedUrls.get(containedUrls.size()-1)).get();
                     if(String.valueOf(videostreamlink).contains("htttps://nl3.")) {
                         Log.i("chalrhahaiye","firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
