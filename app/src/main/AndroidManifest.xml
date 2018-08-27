@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.stuffbox.webscraper">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,6 +29,9 @@
         </activity>
         <activity android:name=".AnimeFinder"></activity>
         <activity android:name=".selectEpisode"></activity>
+        <activity android:name=".webvideo"
+            android:allowEmbedded="true"
+            android:screenOrientation="landscape"></activity>
     </application>
 
 </manifest>

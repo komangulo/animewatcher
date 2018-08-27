@@ -45,6 +45,7 @@ public class WatchVideo extends Activity {
     WebView webView;
     String finallink;
     VideoView videoView;
+    String l;
     int k=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +137,7 @@ public class WatchVideo extends Activity {
                 Log.i("mataana",String.valueOf(mElement.size()));
                 x=mElementDataSize.attr("src");
                 try{
-                    String l="https:"+x;
+                     l="https:"+x;
                     org.jsoup.nodes.Document vid=Jsoup.connect(l).get();
                     Log.i("videf",String.valueOf(vid));
                     Elements elements=vid.select("script").eq(5);
@@ -170,7 +171,7 @@ public class WatchVideo extends Activity {
                        Log.i("Checkblabla",containedUrls.get(i));
                     //Log.i("Checkblabla",containedUrls.get(3));
 if(containedUrls.size()==0)
-    Toast.makeText(context,"cannot play video")
+    Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
                     org.jsoup.nodes.Document videostreamlink=Jsoup.connect(containedUrls.get(containedUrls.size()-1)).get();
                     if(String.valueOf(videostreamlink).contains("htttps://nl3.")) {
                         Log.i("chalrhahaiye","firbhinhichalrha");
@@ -220,7 +221,7 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
                        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mp.setLooping(true);
+               //     mp.setLooping(true);
                     videoView.start();
                 }
             });
@@ -236,7 +237,7 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
                       //         videoView.setVisibility(View.INVISIBLE);
                       //         webView.setVisibility(View.VISIBLE);
                       //         webView.loadUrl("https://www.mp4upload.com/embed-yt5fgeu7ldxd.html");
-                             Toast.makeText(context,"Cannot play video",Toast.LENGTH_SHORT).show();
+                             Toast.makeText(context,"Cannot play video trying other method",Toast.LENGTH_SHORT).show();
                      //          ((ViewGroup)videoView.getParent()).removeView(videoView);
                      //          ((ViewGroup)webView.getParent()).removeView(webView);
 
@@ -244,7 +245,12 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
                       //         layout.addView(webView);
                  //             setContentView(webView);
 //finish();
-                               return false;
+                               Intent intent=new Intent(context,webvideo.class);
+                               intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                               intent.putExtra("videostreamlink",l);
+                               startActivity(intent);
+                               finish();
+                               return true;
                            }
                        });
         }

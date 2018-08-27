@@ -40,6 +40,14 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new Description().execute();
+        String x=getIntent().getStringExtra("sentfromhere");
+        if(x!=null)
+        {
+            finish();
+            Intent intent = new Intent(this, this.getClass());
+            startActivity(intent);
+
+        }
         final EditText editText=findViewById(R.id.edittext);
         Button b=findViewById(R.id.ad);
         b.setOnClickListener(new View.OnClickListener() {
