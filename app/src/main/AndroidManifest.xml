@@ -30,8 +30,7 @@
         <activity android:name=".AnimeFinder"></activity>
         <activity android:name=".selectEpisode"></activity>
         <activity android:name=".webvideo"
-            android:allowEmbedded="true"
-            android:screenOrientation="landscape"></activity>
+            />
     </application>
 
 </manifest>
