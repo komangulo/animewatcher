@@ -5,28 +5,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class webvideo extends Activity {
     String url;
-
+    WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.webviewer);
-        WebView webView = findViewById(R.id.website);
+       setContentView(R.layout.webviewer);
+        webView = findViewById(R.id.website);
         url = getIntent().getStringExtra("videostreamlink");
-        webView.loadUrl(url);
         Log.i("checkingstring",url);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return true;
-            }
-        });
+        webView.setWebViewClient(new MyBrowser());
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+       // webView.getScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);;
+        webView.loadUrl(url);
+
+        //  setContentView(webView);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
@@ -44,10 +44,19 @@ public class webvideo extends Activity {
     @Override
     public void onBackPressed() {
         Log.d("CDA", "onBackPressed Called");
-        Intent setIntent = new Intent(this,MainActivity.class);
-        setIntent.addCategory(Intent.CATEGORY_HOME);
-        setIntent.putExtra("sentfromhere",1);
-        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(setIntent);
+   //     Intent setIntent = new Intent(this,MainActivity.class);
+        webView.goBack();
+
+        //    setIntent.addCategory(Intent.CATEGORY_HOME);
+    //    setIntent.putExtra("sentfromhere",1);
+    //    setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    //    startActivity(setIntent);
+    }
+    private class MyBrowser extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        //    view.loadUrl(url);
+            return true;
+        }
     }
 }

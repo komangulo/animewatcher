@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 public class WatchVideo extends Activity {
     WebView webView;
     String finallink;
+    ProgressDialog mProgressDialog;
     VideoView videoView;
     String l;
     int k=0;
@@ -66,7 +67,14 @@ public class WatchVideo extends Activity {
        mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
         videoView.setMediaController(mediaController);
-        videoView.start();
+      //  videoView.start();
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                //     mp.setLooping(true);
+                videoView.start();
+            }
+        });
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -115,11 +123,11 @@ public class WatchVideo extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-       /*     mProgressDialog = new ProgressDialog(MainActivity.this);
-            mProgressDialog.setTitle("Anime");
+            mProgressDialog = new ProgressDialog(WatchVideo.this);
+            mProgressDialog.setTitle("Video");
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show(); */
+            mProgressDialog.show();
         }
 
         @Override
@@ -211,20 +219,14 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
         @Override
         protected void onPostExecute(Void result) {
             // Set description into TextView
-
+mProgressDialog.dismiss();
             RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
             videoView.setVideoURI(Uri.parse(finallink));
             final View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             decorView.setSystemUiVisibility(uiOptions);
-                       videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-               //     mp.setLooping(true);
-                    videoView.start();
-                }
-            });
+
                        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                            @Override
                            public boolean onError(MediaPlayer mp, int what, int extra) {

@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -27,6 +28,7 @@ public class selectEpisode extends AppCompatActivity {
     @Override
     protected   void onCreate(Bundle savedInstanceState)
     {
+     //   Button button=findViewById(R.id.)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodeselector);
         link=getIntent().getStringExtra("link");
