@@ -146,12 +146,13 @@ public class WatchVideo extends Activity {
                 x=mElementDataSize.attr("src");
                 try{
                      l="https:"+x;
+                     Log.i("Checkingsomethingsomething",l);
                     org.jsoup.nodes.Document vid=Jsoup.connect(l).get();
                     Log.i("videf",String.valueOf(vid));
                     Elements elements=vid.select("script").eq(5);
                     Elements xxa=vid.select("script");
                     Log.i("bhaichaljanaa",String.valueOf(xxa.size()));
-                    Log.i("checkblabla",String.valueOf(elements));
+                    Log.i("check",String.valueOf(elements));
                     String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
                     Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
                     Matcher urlMatcher = pattern.matcher(String.valueOf(elements));
@@ -178,13 +179,14 @@ public class WatchVideo extends Activity {
                     for(int i=0;i<containedUrls.size();i++)
                        Log.i("Checkblabla",containedUrls.get(i));
                     //Log.i("Checkblabla",containedUrls.get(3));
-if(containedUrls.size()==0)
-    Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
+//if(containedUrls.size()==0)
+ //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
                     org.jsoup.nodes.Document videostreamlink=Jsoup.connect(containedUrls.get(containedUrls.size()-1)).get();
                     if(String.valueOf(videostreamlink).contains("htttps://nl3.")) {
                         Log.i("chalrhahaiye","firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
                     }
+
             /*        if(containedUrls.get(3).contains(".m3u8"))
                     {
                         Toast.makeText(context,"Cannot play video",Toast.LENGTH_SHORT);
@@ -198,8 +200,8 @@ Elements elements1= videostreamlink.select("div[class=dowload]").select("a");
 Log.i("sizeof",String.valueOf(elements1.size()));
 Log.i("sahihaiyanhi",elements1.attr("href"));
  finallink= elements1.attr("href");
- Log.i("zxc",finallink);                    Log.i("marjaao",String.valueOf(elements));
-                }catch (IOException e){
+ Log.i("zxc",finallink);                 Log.i("marjaao",String.valueOf(elements));
+         }catch (IOException e){
                     e.printStackTrace();
                 }
 
