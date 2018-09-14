@@ -7,21 +7,26 @@
     android:layout_height="match_parent"
     tools:context="com.stuffbox.webscraper.MainActivity">
 <LinearLayout
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:orientation="horizontal"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:layout_height="wrap_content">
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_margin="10dp"
 android:id="@+id/edittext"
-        android:hint="anime name"/>
+
+        android:hint="Anime name"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:id="@+id/ad"
         android:text="submit"/>
+
 </LinearLayout>
    <android.support.v7.widget.RecyclerView
     android:id="@+id/act_recyclerview"

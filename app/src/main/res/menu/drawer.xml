@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:id="@+id/latest"
+    android:title="Latest"
+    />
+    <item
+        android:id="@+id/Popular"
+        android:title="Popular"/>
+<item
+    android:id="@+id/genre"
+    android:title="genre"/>
+    <item
+        android:title="Recently added Series"
+        android:id="@+id/ras"/>
+
+
+</menu>

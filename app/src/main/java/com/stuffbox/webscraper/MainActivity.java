@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog mProgressDialog;
    // private String url = "https://www.yudiz.com/blog/";
-    private  String url= "https://www7.gogoanimes.tv/";
+    private  String url= "https://www8.gogoanimes.tv/";
     private ArrayList<String> mAnimeList = new ArrayList<>();
     private ArrayList<String> mSiteLink = new ArrayList<>();
     private ArrayList<String> mImageLink = new ArrayList<>();
@@ -63,7 +63,7 @@ for(int i=0;i<s.length();i++)
         s.setCharAt(i,'%');
     }
 }
-searchurl="https://www7.gogoanimes.tv//search.html?keyword="+s.toString();
+searchurl="https://www8.gogoanimes.tv//search.html?keyword="+s.toString();
         Log.i("CHECKING",searchurl);
 Intent intent=new Intent(getApplicationContext(),AnimeFinder.class);
 intent.putExtra("searchingstring",searchurl);

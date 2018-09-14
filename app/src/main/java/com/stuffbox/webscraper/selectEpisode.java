@@ -146,7 +146,6 @@ for(int i=1;i<=x;i++)
             mRecyclerView.setAdapter(mDataAdapter);
             mProgressDialog.dismiss();
             editText.setHint("Episode no between 1 to "+mEpisodeList.size());
-            InputFilterMinMax filter = new InputFilterMinMax(1,mEpisodeList.size() ) ;
 
 editText.setFilters(new InputFilter[]{
         new InputFilterMinMax(1,mEpisodeList.size())

@@ -72,18 +72,17 @@ public class WatchVideo extends Activity {
     ProgressDialog mProgressDialog;
     VideoView videoView;
     String l;
+    long time;
     int k=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
     private final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
     private PlayerView playerView;
-    private MediaSource mVideoSource;
     private boolean mExoPlayerFullscreen = false;
-    private FrameLayout mFullScreenButton;
-    private ImageView mFullScreenIcon;
-    private Dialog mFullScreenDialog;
     SimpleExoPlayer simpleExoPlayer;
     private int mResumeWindow;
+    View decorView;
+    int uiOptions;
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
     private long mResumePosition;
     @Override
@@ -91,6 +90,12 @@ public class WatchVideo extends Activity {
 
         super.onCreate(savedInstanceState);
        setContentView(R.layout.videoviewer);
+         decorView = getWindow().getDecorView();
+         uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+        if(finallink!=null)
+        Log.i("voiz",finallink);
         if (savedInstanceState != null) {
             mResumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
             mResumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
@@ -98,22 +103,24 @@ public class WatchVideo extends Activity {
 
 
         }
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        decorView.setSystemUiVisibility(uiOptions);
-        new Description(getApplicationContext()).execute();
-        Handler handler=new Handler();
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        DefaultTrackSelector trackSelector= new DefaultTrackSelector(videoTrackSelectionFactory);
-         simpleExoPlayer= ExoPlayerFactory.newSimpleInstance(this,trackSelector);
-         playerView=findViewById(R.id.exoplayer);
-        playerView.setPlayer(simpleExoPlayer);
-        //First Hide other objects (listview or recyclerview), better hide them using Gone.
 
-        DefaultBandwidthMeter bandwidthMeter1=new DefaultBandwidthMeter();
-         datasourcefactory=new DefaultDataSourceFactory(this, Util.getUserAgent(this,"tryingexoplayer"));
+
+             decorView = getWindow().getDecorView();
+             uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            decorView.setSystemUiVisibility(uiOptions);
+            new Description(getApplicationContext()).execute();
+            Handler handler = new Handler();
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+            simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
+            playerView = findViewById(R.id.exoplayer);
+            playerView.setPlayer(simpleExoPlayer);
+            //First Hide other objects (listview or recyclerview), better hide them using Gone.
+
+            DefaultBandwidthMeter bandwidthMeter1 = new DefaultBandwidthMeter();
+            datasourcefactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "tryingexoplayer"));
 
 
     }
@@ -123,6 +130,9 @@ public class WatchVideo extends Activity {
         outState.putInt(STATE_RESUME_WINDOW, mResumeWindow);
         outState.putLong(STATE_RESUME_POSITION, mResumePosition);
         outState.putBoolean(STATE_PLAYER_FULLSCREEN, mExoPlayerFullscreen);
+        Log.i("loggingsomething",finallink);
+        outState.putString("videolink",finallink);
+
         super.onSaveInstanceState(outState);
     }
     @Override
@@ -185,7 +195,7 @@ public class WatchVideo extends Activity {
                 x=mElementDataSize.attr("src");
                 try{
                      l="https:"+x;
-                     Log.i("Checkingsomethingsomething",l);
+               //      Log.i("Checkingsomethingsomething",l);
                     org.jsoup.nodes.Document vid=Jsoup.connect(l).get();
                     Log.i("videf",String.valueOf(vid));
                     Elements elements=vid.select("script").eq(5);
@@ -267,6 +277,7 @@ mProgressDialog.dismiss();
         //    videoView.setVideoURI(Uri.parse(finallink));
 
             playerView.getPlayer().setPlayWhenReady(true);
+
             simpleExoPlayer.addListener(new Player.EventListener() {
                 @Override
                 public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
@@ -301,13 +312,6 @@ mProgressDialog.dismiss();
                 @Override
                 public void onPlayerError( ExoPlaybackException error) {
                     Toast.makeText(context,"Cannot play video trying other method",Toast.LENGTH_SHORT).show();
-                    //          ((ViewGroup)videoView.getParent()).removeView(videoView);
-                    //          ((ViewGroup)webView.getParent()).removeView(webView);
-
-                    //       LinearLayout layout=findViewById(R.id.webview);
-                    //         layout.addView(webView);
-                    //             setContentView(webView);
-//finish();
                     playerView.getPlayer().release();
 
                     Intent intent=new Intent(context,webvideo.class);
@@ -338,7 +342,26 @@ mProgressDialog.dismiss();
 
 
 
+@Override
+public void onPause()
+{
+    super.onPause();
+    time= playerView.getPlayer().getCurrentPosition();
+    playerView.getPlayer().stop();
 
+}
+@Override
+public  void  onResume()
+{
+    super.onResume();
+    if(finallink!=null)
+    {
+        MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
+        simpleExoPlayer.prepare(vediosource);}
+    playerView.getPlayer().setPlayWhenReady(true);
+    playerView.getPlayer().seekTo(time);
+
+}
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

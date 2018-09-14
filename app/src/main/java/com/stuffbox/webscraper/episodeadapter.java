@@ -53,7 +53,6 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
     public class MyViewHolder extends RecyclerView.ViewHolder {
      //   private CardView cardView;
 
-        private TextView  episodeno;
         private Uri animeuri,imageuri;
      //   private ImageView imageofanime;
         private Button button;
@@ -61,7 +60,6 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
         public MyViewHolder(View view) {
             super(view);
            // title = (TextView) view.findViewById(R.id.animename);
-            episodeno = (TextView) view.findViewById(R.id.textforepisode);
             button=view.findViewById(R.id.notbutton);
            // imageofanime=(ImageView) view.findViewById(R.id.img);
        //     cardView=(CardView) view.findViewById(R.id.cardview);
@@ -79,9 +77,8 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
    //     holder.title.setText(mAnimeList.get(position));
-        holder.episodeno.setText(mEpisodeList.get(position));
         holder.animeuri= Uri.parse(mSiteLink.get(position));
-
+holder.button.setText("Episode no - "+ (position+1));
 
       holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
