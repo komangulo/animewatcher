@@ -1,6 +1,7 @@
 package com.stuffbox.webscraper;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,20 +10,44 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -48,33 +73,57 @@ public class WatchVideo extends Activity {
     VideoView videoView;
     String l;
     int k=0;
+    private final String STATE_RESUME_WINDOW = "resumeWindow";
+    private final String STATE_RESUME_POSITION = "resumePosition";
+    private final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
+    private PlayerView playerView;
+    private MediaSource mVideoSource;
+    private boolean mExoPlayerFullscreen = false;
+    private FrameLayout mFullScreenButton;
+    private ImageView mFullScreenIcon;
+    private Dialog mFullScreenDialog;
+    SimpleExoPlayer simpleExoPlayer;
+    private int mResumeWindow;
+    com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
+    private long mResumePosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
        setContentView(R.layout.videoviewer);
-         videoView=findViewById(R.id.videoview);
-     //   new Description(videoView,getApplicationContext()).execute();
+        if (savedInstanceState != null) {
+            mResumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
+            mResumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
+            mExoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+
+
+        }
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
         new Description(getApplicationContext()).execute();
-   //     WebView browser = (WebView) findViewById(R.id.webview);
-      //  browser.loadUrl("http://www.tutorialspoint.com");
-       //      DisplayMetrics metrics = new DisplayMetrics(); getWindowManager().getDefaultDisplay().getMetrics(metrics);
-     //   android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) videoView.getLayoutParams();
-     ///   params.width =  metrics.widthPixels;
-     //  params.height = metrics.heightPixels;
-    //    params.leftMargin = 0;
-    //    videoView.setLayoutParams(params);
-        MediaController mediaController = new MediaController(this);
-       mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-        videoView.setMediaController(mediaController);
-      //  videoView.start();
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                //     mp.setLooping(true);
-                videoView.start();
-            }
-        });
+        Handler handler=new Handler();
+        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+        TrackSelection.Factory videoTrackSelectionFactory =new AdaptiveTrackSelection.Factory(bandwidthMeter);
+        DefaultTrackSelector trackSelector= new DefaultTrackSelector(videoTrackSelectionFactory);
+         simpleExoPlayer= ExoPlayerFactory.newSimpleInstance(this,trackSelector);
+         playerView=findViewById(R.id.exoplayer);
+        playerView.setPlayer(simpleExoPlayer);
+        //First Hide other objects (listview or recyclerview), better hide them using Gone.
+
+        DefaultBandwidthMeter bandwidthMeter1=new DefaultBandwidthMeter();
+         datasourcefactory=new DefaultDataSourceFactory(this, Util.getUserAgent(this,"tryingexoplayer"));
+
+
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        outState.putInt(STATE_RESUME_WINDOW, mResumeWindow);
+        outState.putLong(STATE_RESUME_POSITION, mResumePosition);
+        outState.putBoolean(STATE_PLAYER_FULLSCREEN, mExoPlayerFullscreen);
+        super.onSaveInstanceState(outState);
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -85,20 +134,10 @@ public class WatchVideo extends Activity {
         }
     }
     private void hideSystemUI() {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     // Shows the system bars by removing all the flags
@@ -222,42 +261,94 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
         protected void onPostExecute(Void result) {
             // Set description into TextView
 mProgressDialog.dismiss();
-            RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
-            videoView.setVideoURI(Uri.parse(finallink));
-            final View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            decorView.setSystemUiVisibility(uiOptions);
+       //     RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
+            MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
+            simpleExoPlayer.prepare(vediosource);
+        //    videoView.setVideoURI(Uri.parse(finallink));
 
-                       videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                           @Override
-                           public boolean onError(MediaPlayer mp, int what, int extra) {
-              //           Intent intent=new Intent(context,M.class);
-     //                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-       //                        startActivity(intent);
-////WebView webView=findViewById(R.id.as);
-                     //          WebSettings webSettings=webView.getSettings();
-                     //          webSettings.setJavaScriptEnabled(true);
-                      //         videoView.setVisibility(View.INVISIBLE);
-                      //         webView.setVisibility(View.VISIBLE);
-                      //         webView.loadUrl("https://www.mp4upload.com/embed-yt5fgeu7ldxd.html");
-                             Toast.makeText(context,"Cannot play video trying other method",Toast.LENGTH_SHORT).show();
-                     //          ((ViewGroup)videoView.getParent()).removeView(videoView);
-                     //          ((ViewGroup)webView.getParent()).removeView(webView);
+            playerView.getPlayer().setPlayWhenReady(true);
+            simpleExoPlayer.addListener(new Player.EventListener() {
+                @Override
+                public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
 
-                        //       LinearLayout layout=findViewById(R.id.webview);
-                      //         layout.addView(webView);
-                 //             setContentView(webView);
+                }
+
+                @Override
+                public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+                }
+
+                @Override
+                public void onLoadingChanged(boolean isLoading) {
+
+                }
+
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+                }
+
+                @Override
+                public void onRepeatModeChanged(int repeatMode) {
+
+                }
+
+                @Override
+                public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+                }
+
+                @Override
+                public void onPlayerError( ExoPlaybackException error) {
+                    Toast.makeText(context,"Cannot play video trying other method",Toast.LENGTH_SHORT).show();
+                    //          ((ViewGroup)videoView.getParent()).removeView(videoView);
+                    //          ((ViewGroup)webView.getParent()).removeView(webView);
+
+                    //       LinearLayout layout=findViewById(R.id.webview);
+                    //         layout.addView(webView);
+                    //             setContentView(webView);
 //finish();
-                               Intent intent=new Intent(context,webvideo.class);
-                               intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                               intent.putExtra("videostreamlink",l);
-                               startActivity(intent);
-                               finish();
-                               return true;
-                           }
-                       });
+                    playerView.getPlayer().release();
+
+                    Intent intent=new Intent(context,webvideo.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("videostreamlink",l);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onPositionDiscontinuity(int reason) {
+
+                }
+
+                @Override
+                public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+                }
+
+                @Override
+                public void onSeekProcessed() {
+
+                }
+            });
+
         }
     }
 
+
+
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            playerView.getPlayer().release();
+            super.onBackPressed();
+        }
+        return true;
+    }
 }

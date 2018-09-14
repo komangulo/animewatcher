@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -24,7 +29,7 @@ public class selectEpisode extends AppCompatActivity {
     ProgressDialog mProgressDialog;
     private ArrayList<String> mSiteLink = new ArrayList<>();
     episodeadapter mDataAdapter;
-
+    EditText editText;
     @Override
     protected   void onCreate(Bundle savedInstanceState)
     {
@@ -45,11 +50,25 @@ public class selectEpisode extends AppCompatActivity {
             }
 
         }
+
         Log.i("marjabe",b.toString());
 animename=b.toString();
         new Searching().execute();
+ editText=findViewById(R.id.episodeno);
 
-    }
+Button button=findViewById(R.id.episodeselector);
+    button.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+         int  episodeno=   Integer.parseInt(String.valueOf(editText.getText()));
+            Intent intent=new Intent(getApplicationContext(),WatchVideo.class);
+            intent.putExtra("link",mSiteLink.get(episodeno-1));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+
+        }
+    });}
+
     private class Searching extends AsyncTask<Void, Void, Void> {
         String desc;
 
@@ -118,6 +137,7 @@ for(int i=1;i<=x;i++)
                 Log.i("checkingthat",mSiteLink.get(i));
 
             }
+            
   //          mRecyclerView.setDrawingCacheEnabled(true);
      //       mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
      //       mRecyclerView.setItemViewCacheSize(20);
@@ -125,7 +145,12 @@ for(int i=1;i<=x;i++)
             mRecyclerView.setLayoutManager(linearLayoutManager);
             mRecyclerView.setAdapter(mDataAdapter);
             mProgressDialog.dismiss();
+            editText.setHint("Episode no between 1 to "+mEpisodeList.size());
+            InputFilterMinMax filter = new InputFilterMinMax(1,mEpisodeList.size() ) ;
 
-        }
+editText.setFilters(new InputFilter[]{
+        new InputFilterMinMax(1,mEpisodeList.size())
+});        }
     }
+
 }
