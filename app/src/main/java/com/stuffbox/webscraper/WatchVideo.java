@@ -247,9 +247,16 @@ public class WatchVideo extends Activity {
 Log.i("blablablabla",String.valueOf(videostreamlink));
 Elements elements1= videostreamlink.select("div[class=dowload]").select("a");
 Log.i("sizeof",String.valueOf(elements1.size()));
-Log.i("sahihaiyanhi",elements1.attr("href"));
- finallink= elements1.attr("href");
- Log.i("zxc",finallink);                 Log.i("marjaao",String.valueOf(elements));
+//Log.i("sahihaiyanhi",elements1.attr("href"));
+int i=0;
+while(elements1.eq(i).attr("href").contains("googlevideo"))
+    i++;
+if(i==0)
+    i=1;
+ finallink= elements1.eq(i-1).attr("href");
+                    Log.i("sahihaiyanhi",elements1.eq(i-1).attr("href"));
+
+                    Log.i("zxc",finallink);                 Log.i("marjaao",String.valueOf(elements));
          }catch (IOException e){
                     e.printStackTrace();
                 }
@@ -272,71 +279,80 @@ Log.i("sahihaiyanhi",elements1.attr("href"));
             // Set description into TextView
 mProgressDialog.dismiss();
        //     RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
-            MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
-            simpleExoPlayer.prepare(vediosource);
-        //    videoView.setVideoURI(Uri.parse(finallink));
+            if(finallink==null)
+            {
+                Intent intent = new Intent(context, webvideo.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("videostreamlink", l);
+                startActivity(intent);
+                finish();
+            }
+       else{
+                MediaSource vediosource = new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
+                simpleExoPlayer.prepare(vediosource);
+                //    videoView.setVideoURI(Uri.parse(finallink));
 
-            playerView.getPlayer().setPlayWhenReady(true);
+                playerView.getPlayer().setPlayWhenReady(true);
 
-            simpleExoPlayer.addListener(new Player.EventListener() {
-                @Override
-                public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+                simpleExoPlayer.addListener(new Player.EventListener() {
+                    @Override
+                    public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
 
-                }
+                    }
 
-                @Override
-                public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                    @Override
+                    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
 
-                }
+                    }
 
-                @Override
-                public void onLoadingChanged(boolean isLoading) {
+                    @Override
+                    public void onLoadingChanged(boolean isLoading) {
 
-                }
+                    }
 
-                @Override
-                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                    @Override
+                    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-                }
+                    }
 
-                @Override
-                public void onRepeatModeChanged(int repeatMode) {
+                    @Override
+                    public void onRepeatModeChanged(int repeatMode) {
 
-                }
+                    }
 
-                @Override
-                public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+                    @Override
+                    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
 
-                }
+                    }
 
-                @Override
-                public void onPlayerError( ExoPlaybackException error) {
-                    Toast.makeText(context,"Cannot play video trying other method",Toast.LENGTH_SHORT).show();
-                    playerView.getPlayer().release();
+                    @Override
+                    public void onPlayerError(ExoPlaybackException error) {
+                        Toast.makeText(context, "Cannot play video trying other method", Toast.LENGTH_SHORT).show();
+                        playerView.getPlayer().release();
 
-                    Intent intent=new Intent(context,webvideo.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("videostreamlink",l);
-                    startActivity(intent);
-                    finish();
-                }
+                        Intent intent = new Intent(context, webvideo.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("videostreamlink", l);
+                        startActivity(intent);
+                        finish();
+                    }
 
-                @Override
-                public void onPositionDiscontinuity(int reason) {
+                    @Override
+                    public void onPositionDiscontinuity(int reason) {
 
-                }
+                    }
 
-                @Override
-                public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+                    @Override
+                    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
-                }
+                    }
 
-                @Override
-                public void onSeekProcessed() {
+                    @Override
+                    public void onSeekProcessed() {
 
-                }
-            });
-
+                    }
+                });
+            }
         }
     }
 

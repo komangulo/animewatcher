@@ -36,6 +36,7 @@ public class selectEpisode extends AppCompatActivity {
      //   Button button=findViewById(R.id.)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodeselector);
+
         link=getIntent().getStringExtra("link");
         StringBuffer b=new StringBuffer();
         for(int i=0;i<link.length();i++)
@@ -46,6 +47,7 @@ public class selectEpisode extends AppCompatActivity {
                 {
                     for(int j=i+2;j<link.length();j++)
                         b.append(String.valueOf(link.charAt(j)));
+                    break;
                 }
             }
 
@@ -137,7 +139,7 @@ for(int i=1;i<=x;i++)
                 Log.i("checkingthat",mSiteLink.get(i));
 
             }
-            
+
   //          mRecyclerView.setDrawingCacheEnabled(true);
      //       mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
      //       mRecyclerView.setItemViewCacheSize(20);
