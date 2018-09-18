@@ -70,6 +70,8 @@ public class WatchVideo extends Activity {
     WebView webView;
     String finallink;
     ProgressDialog mProgressDialog;
+    private ImageView imageView;
+
     VideoView videoView;
     String l;
     long time;
@@ -183,56 +185,74 @@ public class WatchVideo extends Activity {
         protected Void doInBackground(Void... params) {
             try {
                 // Connect to the web site
-           String link=     getIntent().getStringExtra("link");
+                String link = getIntent().getStringExtra("link");
                 org.jsoup.nodes.Document mBlogDocument = Jsoup.connect(link).get();
-              Log.i("blabla",link);
-            //    Log.i("soja",String.valueOf(mBlogDocument));
+                Log.i("blabla", link);
+                //    Log.i("soja",String.valueOf(mBlogDocument));
                 // Using Elements to get the Meta data
                 //      Elements mElementDataSize = mBlogDocument.select("div[class=author-date]");
-                Elements mElementDataSize=mBlogDocument.select("iframe");
-                Elements mElement=mBlogDocument.select("span[class=btndownload]");
-                Log.i("mataana",String.valueOf(mElement.size()));
-                x=mElementDataSize.attr("src");
-                try{
-                     l="https:"+x;
-               //      Log.i("Checkingsomethingsomething",l);
-                    org.jsoup.nodes.Document vid=Jsoup.connect(l).get();
-                    Log.i("videf",String.valueOf(vid));
-                    Elements elements=vid.select("script").eq(5);
-                    Elements xxa=vid.select("script");
-                    Log.i("bhaichaljanaa",String.valueOf(xxa.size()));
-                    Log.i("check",String.valueOf(elements));
+                Elements mElementDataSize = mBlogDocument.select("iframe");
+                Elements mElement = mBlogDocument.select("span[class=btndownload]");
+                Log.i("mataana", String.valueOf(mElement.size()));
+                x = mElementDataSize.attr("src");
+                if(mElement.size()==0)
+                {
+Elements elements=mBlogDocument.select("li[class=your]").select("a");
+Log.i("printing size",String.valueOf(elements.size()));
+String value=elements.attr("data-video");
+int index=value.indexOf("embed");
+Log.i("printingindex",String.valueOf(index));
+StringBuffer str=new StringBuffer(value);
+
+    str.replace(index,index+4,"watch");
+                    Log.i("printingx",value);
+
+Log.i("printing url",value);
+                    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
+                    Log.i("sizeofmp4link",String.valueOf(mp4link));
+                   Elements elements1=mp4link.select("div[id=player]");
+               //     Log.i("printing url",elements1);
+l=value;
+                //    finallink=elements1;
+                    Log.i("oneaaja",String.valueOf(elements1));
+                }
+             else{   try {
+                    l = "https:" + x;
+                    //      Log.i("Checkingsomethingsomething",l);
+                    org.jsoup.nodes.Document vid = Jsoup.connect(l).get();
+                    Log.i("videf", String.valueOf(vid));
+                    Elements elements = vid.select("script").eq(5);
+                    Elements xxa = vid.select("script");
+                    Log.i("bhaichaljanaa", String.valueOf(xxa.size()));
+                    Log.i("check", String.valueOf(elements));
                     String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
                     Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
                     Matcher urlMatcher = pattern.matcher(String.valueOf(elements));
                     ArrayList<String> containedUrls = new ArrayList<String>();
-                    while (urlMatcher.find())
-                    {
+                    while (urlMatcher.find()) {
                         containedUrls.add(String.valueOf(elements).substring(urlMatcher.start(0),
                                 urlMatcher.end(0)));
                     }
-                    if(containedUrls.size()==0)
-                    {
-                        Elements x=vid.select("script").eq(3);
+                    if (containedUrls.size() == 0) {
+                        Elements x = vid.select("script").eq(3);
                         String a = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
                         Pattern z = Pattern.compile(a, Pattern.CASE_INSENSITIVE);
                         Matcher y = z.matcher(String.valueOf(x));
                         ArrayList<String> b = new ArrayList<String>();
-                        while (y.find())
-                        {
+                        while (y.find()) {
                             containedUrls.add(String.valueOf(x).substring(y.start(0),
                                     y.end(0)));
                         }
                     }
 
-                    for(int i=0;i<containedUrls.size();i++)
-                       Log.i("Checkblabla",containedUrls.get(i));
+                    for (int i = 0; i < containedUrls.size(); i++)
+                        Log.i("Checkblabla", containedUrls.get(i));
                     //Log.i("Checkblabla",containedUrls.get(3));
 //if(containedUrls.size()==0)
- //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
-                    org.jsoup.nodes.Document videostreamlink=Jsoup.connect(containedUrls.get(containedUrls.size()-1)).get();
-                    if(String.valueOf(videostreamlink).contains("htttps://nl3.")) {
-                        Log.i("chalrhahaiye","firbhinhichalrha");
+                    //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
+                    org.jsoup.nodes.Document videostreamlink = Jsoup.connect(containedUrls.get(containedUrls.size() - 1)).get();
+                    if (String.valueOf(videostreamlink).contains("htttps://nl3.")) {
+                        Log.i("chalrhahaiye", "firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
                     }
 
@@ -244,23 +264,24 @@ public class WatchVideo extends Activity {
 
                         context.startActivity(intent);
                     } */
-Log.i("blablablabla",String.valueOf(videostreamlink));
-Elements elements1= videostreamlink.select("div[class=dowload]").select("a");
-Log.i("sizeof",String.valueOf(elements1.size()));
+                    Log.i("blablablabla", String.valueOf(videostreamlink));
+                    Elements elements1 = videostreamlink.select("div[class=dowload]").select("a");
+                    Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
-int i=0;
-while(elements1.eq(i).attr("href").contains("googlevideo"))
-    i++;
-if(i==0)
-    i=1;
- finallink= elements1.eq(i-1).attr("href");
-                    Log.i("sahihaiyanhi",elements1.eq(i-1).attr("href"));
+                    int i = 0;
+                    while (elements1.eq(i).attr("href").contains("googlevideo"))
+                        i++;
+                    if (i == 0)
+                        i = 1;
+                    finallink = elements1.eq(i - 1).attr("href");
+                    Log.i("sahihaiyanhi", elements1.eq(i - 1).attr("href"));
 
-                    Log.i("zxc",finallink);                 Log.i("marjaao",String.valueOf(elements));
-         }catch (IOException e){
+                    Log.i("zxc", finallink);
+                    Log.i("marjaao", String.valueOf(elements));
+                }   catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                }
                 for(int i=0;i<mElementDataSize.size();i++)
                     Log.i("manik",mElementDataSize.eq(i).html());
                 String videostreamlink=mElementDataSize.html();
@@ -366,6 +387,7 @@ public void onPause()
     playerView.getPlayer().stop();
 
 }
+
 @Override
 public  void  onResume()
 {
