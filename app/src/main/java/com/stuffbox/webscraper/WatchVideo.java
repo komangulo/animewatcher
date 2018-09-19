@@ -82,6 +82,7 @@ public class WatchVideo extends Activity {
     private PlayerView playerView;
     private boolean mExoPlayerFullscreen = false;
     SimpleExoPlayer simpleExoPlayer;
+    org.jsoup.nodes.Document mBlogDocument ;
     private int mResumeWindow;
     View decorView;
     int uiOptions;
@@ -186,8 +187,12 @@ public class WatchVideo extends Activity {
             try {
                 // Connect to the web site
                 String link = getIntent().getStringExtra("link");
-                org.jsoup.nodes.Document mBlogDocument = Jsoup.connect(link).get();
+                if(link.equals("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
+                    mBlogDocument=Jsoup.connect("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
+                else
+                 mBlogDocument = Jsoup.connect(link).get();
                 Log.i("blabla", link);
+
                 //    Log.i("soja",String.valueOf(mBlogDocument));
                 // Using Elements to get the Meta data
                 //      Elements mElementDataSize = mBlogDocument.select("div[class=author-date]");
@@ -245,9 +250,9 @@ l=value;
                         }
                     }
 //Log.i("loghoja",String.valueOf(containedUrls.size()));
-             //       for (int i = 0; i < containedUrls.size(); i++)
-           //             Log.i("Checkblabla", containedUrls.get(i));
-         //           //Log.i("Checkblabla",containedUrls.get(3));
+                  for (int i = 0; i < containedUrls.size(); i++)
+                     Log.i("Checkblabla", containedUrls.get(i));
+                 //Log.i("Checkblabla",containedUrls.get(3));
 //if(containedUrls.size()==0)
                     //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
                     if(containedUrls.size()==0)
