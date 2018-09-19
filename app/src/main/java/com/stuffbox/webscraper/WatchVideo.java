@@ -195,26 +195,26 @@ public class WatchVideo extends Activity {
                 Elements mElement = mBlogDocument.select("span[class=btndownload]");
                 Log.i("mataana", String.valueOf(mElement.size()));
                 x = mElementDataSize.attr("src");
-                if(mElement.size()==0)
+                if(mElementDataSize.size()==0)
                 {
-Elements elements=mBlogDocument.select("li[class=your]").select("a");
-Log.i("printing size",String.valueOf(elements.size()));
+Elements elements=mBlogDocument.select("li[class=mp4]").select("a");
+//Log.i("printing size",String.valueOf(elements.size()));
 String value=elements.attr("data-video");
-int index=value.indexOf("embed");
-Log.i("printingindex",String.valueOf(index));
-StringBuffer str=new StringBuffer(value);
+//int index=value.indexOf("embed");
+//Log.i("printingindex",String.valueOf(index));
+//StringBuffer str=new StringBuffer(value);
 
-    str.replace(index,index+4,"watch");
-                    Log.i("printingx",value);
+    //str.replace(index,index+5,"watch");
+  //                  Log.i("printingx",str.toString());
 
-Log.i("printing url",value);
-                    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
-                    Log.i("sizeofmp4link",String.valueOf(mp4link));
-                   Elements elements1=mp4link.select("div[id=player]");
+//Log.i("printing url",value);
+                //    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
+              //      Log.i("sizeofmp4link",String.valueOf(mp4link));
+            //       Elements elements1=mp4link.select("div[id=player]");
                //     Log.i("printing url",elements1);
 l=value;
                 //    finallink=elements1;
-                    Log.i("oneaaja",String.valueOf(elements1));
+                  //  Log.i("oneaaja",String.valueOf(elements1));
                 }
              else{   try {
                     l = "https:" + x;
@@ -244,13 +244,32 @@ l=value;
                                     y.end(0)));
                         }
                     }
-
-                    for (int i = 0; i < containedUrls.size(); i++)
-                        Log.i("Checkblabla", containedUrls.get(i));
-                    //Log.i("Checkblabla",containedUrls.get(3));
+//Log.i("loghoja",String.valueOf(containedUrls.size()));
+             //       for (int i = 0; i < containedUrls.size(); i++)
+           //             Log.i("Checkblabla", containedUrls.get(i));
+         //           //Log.i("Checkblabla",containedUrls.get(3));
 //if(containedUrls.size()==0)
                     //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
-                    org.jsoup.nodes.Document videostreamlink = Jsoup.connect(containedUrls.get(containedUrls.size() - 1)).get();
+                    if(containedUrls.size()==0)
+                    {
+                        Elements elements2=mBlogDocument.select("li[class=mp4]").select("a");
+//Log.i("printing size",String.valueOf(elements.size()));
+                        String value=elements2.attr("data-video");
+//int index=value.indexOf("embed");
+//Log.i("printingindex",String.valueOf(index));
+//StringBuffer str=new StringBuffer(value);
+
+                        //str.replace(index,index+5,"watch");
+                        //                  Log.i("printingx",str.toString());
+
+//Log.i("printing url",value);
+                        //    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
+                        //      Log.i("sizeofmp4link",String.valueOf(mp4link));
+                        //       Elements elements1=mp4link.select("div[id=player]");
+                        //     Log.i("printing url",elements1);
+                        l=value;
+                    }
+                else{    org.jsoup.nodes.Document videostreamlink = Jsoup.connect(containedUrls.get(containedUrls.size() - 1)).get();
                     if (String.valueOf(videostreamlink).contains("htttps://nl3.")) {
                         Log.i("chalrhahaiye", "firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
@@ -277,7 +296,7 @@ l=value;
                     Log.i("sahihaiyanhi", elements1.eq(i - 1).attr("href"));
 
                     Log.i("zxc", finallink);
-                    Log.i("marjaao", String.valueOf(elements));
+                    Log.i("marjaao", String.valueOf(elements));}
                 }   catch (IOException e) {
                     e.printStackTrace();
                 }

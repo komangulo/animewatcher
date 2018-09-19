@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ public class webvideo extends Activity {
         mWebViewClient = new myWebViewClient();
         webView.setWebViewClient(mWebViewClient);
         mWebChromeClient = new myWebChromeClient();
+
         webView.setWebChromeClient(mWebChromeClient);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setAppCacheEnabled(true);
@@ -150,13 +152,14 @@ public class webvideo extends Activity {
     class myWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            // return super.shouldOverrideUrlLoading(view, url);    //To change body of overridden methods use File | Settings | File Templates.
+            // return super.shouldOverrideUrlLoading(view, url);
             return true;        }
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError er) {
             handler.proceed();
             // Ignore SSL certificate errors
         }
+
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
