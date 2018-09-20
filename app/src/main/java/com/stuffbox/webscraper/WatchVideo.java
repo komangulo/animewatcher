@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.display.DisplayManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,10 +24,13 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -80,12 +84,14 @@ public class WatchVideo extends Activity {
     private final String STATE_RESUME_POSITION = "resumePosition";
     private final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
     private PlayerView playerView;
+    private ArrayList<String> storinggoogleurls=new ArrayList<>();
     private boolean mExoPlayerFullscreen = false;
     SimpleExoPlayer simpleExoPlayer;
     org.jsoup.nodes.Document mBlogDocument ;
     private int mResumeWindow;
     View decorView;
     int uiOptions;
+    private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
     private long mResumePosition;
     @Override
@@ -124,7 +130,6 @@ public class WatchVideo extends Activity {
 
             DefaultBandwidthMeter bandwidthMeter1 = new DefaultBandwidthMeter();
             datasourcefactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "tryingexoplayer"));
-
 
     }
     @Override
@@ -280,26 +285,28 @@ l=value;
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
                     }
 
-            /*        if(containedUrls.get(3).contains(".m3u8"))
-                    {
-                        Toast.makeText(context,"Cannot play video",Toast.LENGTH_SHORT);
-                        Intent intent=new Intent(context,MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                        context.startActivity(intent);
-                    } */
                     Log.i("blablablabla", String.valueOf(videostreamlink));
                     Elements elements1 = videostreamlink.select("div[class=dowload]").select("a");
                     Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
                     int i = 0;
                     while (elements1.eq(i).attr("href").contains("googlevideo"))
-                        i++;
+                    { storinggoogleurls.add(elements1.eq(i).attr("href"));
+                   // storingquality.add(String.valueOf(elements1.eq(i).text()));
+                        String x=String.valueOf(elements1.eq(i).text());
+                        String c=new StringBuffer(x.substring(10,15)).toString();
+                        storingquality.add(c);
+                        i++;}
                     if (i == 0)
                         i = 1;
+
                     finallink = elements1.eq(i - 1).attr("href");
                     Log.i("sahihaiyanhi", elements1.eq(i - 1).attr("href"));
-
+for(int j=0;j<storingquality.size();j++)
+{
+    Log.i("loggingurl",storinggoogleurls.get(j));
+    Log.i("loggingquality",storingquality.get(j));
+}
                     Log.i("zxc", finallink);
                     Log.i("marjaao", String.valueOf(elements));}
                 }   catch (IOException e) {
