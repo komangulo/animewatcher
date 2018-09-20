@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -75,11 +76,12 @@ public class WatchVideo extends Activity {
     String finallink;
     ProgressDialog mProgressDialog;
     private ImageView imageView;
-
+TextView qualityvalue;
     VideoView videoView;
     String l;
     long time;
     int k=0;
+    int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
     private final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
@@ -90,6 +92,7 @@ public class WatchVideo extends Activity {
     org.jsoup.nodes.Document mBlogDocument ;
     private int mResumeWindow;
     View decorView;
+    ImageButton qualityup,qualitydown;
     int uiOptions;
     private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
@@ -112,8 +115,8 @@ public class WatchVideo extends Activity {
 
 
         }
-
-
+qualitydown=findViewById(R.id.qualitydown);
+        qualityup=findViewById(R.id.qualityup);
              decorView = getWindow().getDecorView();
              uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -289,19 +292,26 @@ l=value;
                     Elements elements1 = videostreamlink.select("div[class=dowload]").select("a");
                     Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
-                    int i = 0;
-                    while (elements1.eq(i).attr("href").contains("googlevideo"))
-                    { storinggoogleurls.add(elements1.eq(i).attr("href"));
+                    while (elements1.eq(qualitysetter).attr("href").contains("googlevideo"))
+                    { storinggoogleurls.add(elements1.eq(qualitysetter).attr("href"));
                    // storingquality.add(String.valueOf(elements1.eq(i).text()));
-                        String x=String.valueOf(elements1.eq(i).text());
+                        String x=String.valueOf(elements1.eq(qualitysetter).text());
                         String c=new StringBuffer(x.substring(10,15)).toString();
                         storingquality.add(c);
-                        i++;}
-                    if (i == 0)
-                        i = 1;
+                        qualitysetter++;}
+                        qualitysetter--;
+                        Log.i("testing",String.valueOf(qualitysetter));
 
-                    finallink = elements1.eq(i - 1).attr("href");
-                    Log.i("sahihaiyanhi", elements1.eq(i - 1).attr("href"));
+                        if (qualitysetter == -1) {
+                       qualitysetter = 0;
+                        qualitydown.setVisibility(View.GONE);
+                        qualityup.setVisibility(View.GONE);
+                        qualityvalue.setVisibility(View.GONE);
+                    }
+                        qualityvalue=findViewById(R.id.qualityxy);
+
+                    finallink = elements1.eq(qualitysetter).attr("href");
+                    Log.i("sahihaiyanhi", elements1.eq(qualitysetter ).attr("href"));
 for(int j=0;j<storingquality.size();j++)
 {
     Log.i("loggingurl",storinggoogleurls.get(j));
@@ -346,6 +356,55 @@ mProgressDialog.dismiss();
 
                 playerView.getPlayer().setPlayWhenReady(true);
 
+                qualitydown.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
+
+                        qualitysetter--;
+                        if(qualitysetter<0)
+                        { Toast.makeText(context,"Least quality",Toast.LENGTH_SHORT).show();
+                        qualitysetter++;}
+                        else
+                        {
+                            long t=playerView.getPlayer().getCurrentPosition();
+                            Log.i("loggintime",String.valueOf(t));
+                            Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+
+                            //     playerView.getPlayer().release();
+                            MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
+                            simpleExoPlayer.prepare(vediosource);
+                            playerView.getPlayer().setPlayWhenReady(true);
+                           playerView.getPlayer().seekTo(t);
+
+                        }
+                    }
+                });
+                qualityup.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
+
+                        qualitysetter++;
+                        if(qualitysetter==storinggoogleurls.size())
+                        {
+                            Toast.makeText(context,"Max Quality",Toast.LENGTH_SHORT).show();
+                            qualitysetter--;
+                        }
+                        else
+                        {
+                            long t=playerView.getPlayer().getCurrentPosition();
+                           // playerView.getPlayer().release();
+                            Log.i("loggintime",String.valueOf(t));
+Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+                            MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
+                            simpleExoPlayer.prepare(vediosource);
+                            playerView.getPlayer().setPlayWhenReady(true);
+                            playerView.getPlayer().seekTo(t);
+                        }
+
+                    }
+                });
                 simpleExoPlayer.addListener(new Player.EventListener() {
                     @Override
                     public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
