@@ -312,8 +312,9 @@ l=value;
                         //    org.jsoup.nodes.Document d=Jsoup.connect("https://www.rapidvideo.com/d/FV6EZSZWKF").get();
                            // System.out.println(d.html());
                             Elements e=rapidvideo.select("div[class=video]");
-                            String f=e.eq(e.size()-1).select("span").select("a").attr("href");
-            finallink=f;
+                            Elements f=e.eq(e.size()-1).select("span").select("a");
+            finallink=f.eq(f.size()-1).attr("href");
+            Log.i("loggingrapidvideo",finallink);
                     }
                         else
                         {
