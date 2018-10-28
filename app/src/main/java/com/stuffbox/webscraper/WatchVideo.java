@@ -304,11 +304,21 @@ l=value;
 
                         if (qualitysetter == -1) {
                        qualitysetter = 0;
-                        qualitydown.setVisibility(View.GONE);
-                        qualityup.setVisibility(View.GONE);
-                        qualityvalue.setVisibility(View.GONE);
+                   //     qualitydown.setVisibility(View.GONE);
+                   //     qualityup.setVisibility(View.GONE);
+                   //     qualityvalue.setVisibility(View.GONE);
+                            Log.i("NHI CHALA",elements1.eq(qualitysetter).attr("href"));
+                            org.jsoup.nodes.Document rapidvideo=Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
+                        //    org.jsoup.nodes.Document d=Jsoup.connect("https://www.rapidvideo.com/d/FV6EZSZWKF").get();
+                           // System.out.println(d.html());
+                            Elements e=rapidvideo.select("div[class=video]");
+                            String f=e.eq(e.size()-1).select("span").select("a").attr("href");
+            finallink=f;
                     }
+                        else
+                        {
                         qualityvalue=findViewById(R.id.qualityxy);
+
 
                     finallink = elements1.eq(qualitysetter).attr("href");
                     Log.i("sahihaiyanhi", elements1.eq(qualitysetter ).attr("href"));
@@ -318,7 +328,7 @@ for(int j=0;j<storingquality.size();j++)
     Log.i("loggingquality",storingquality.get(j));
 }
                     Log.i("zxc", finallink);
-                    Log.i("marjaao", String.valueOf(elements));}
+                    Log.i("marjaao", String.valueOf(elements));} }
                 }   catch (IOException e) {
                     e.printStackTrace();
                 }
