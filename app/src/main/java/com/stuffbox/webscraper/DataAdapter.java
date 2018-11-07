@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +42,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> 
     private Activity mActivity;
     private int lastPosition = -1;
 private Context context;
+    SQLiteDatabase recent;
    // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
    public DataAdapter(Context context, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
         this.mAnimeList = AnimeList;
@@ -80,24 +82,26 @@ private Context context;
         holder.title.setText(mAnimeList.get(position));
        holder.episodeno.setText(mEpisodeList.get(position));
         holder.animeuri= Uri.parse(mSiteLink.get(position));
-        holder.title.setOnClickListener(new View.OnClickListener() {
+         recent=context.openOrCreateDatabase("recent",Context.MODE_PRIVATE,null);
+
+      /*  holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                // WatchVideo.link=mSiteLink.get(position);
-                SQLiteDatabase recent=context.openOrCreateDatabase("recent",Context.MODE_PRIVATE,null);
 
                 Intent intent=new Intent(context,WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
            //     ep=Integer.parseInt(h)
-             //   recent.execSQL("INSERT INTO anime VALUES('Beyblade Burst Chouzetsu','Episode 18','https://www04.gogoanimes.tv/beyblade-burst-chouzetsu-episode-18','https://images.gogoanime.tv/cover/beyblade-burst-chouzetsu.png');");
-              //  recent.execSQL("INSERT INTO anime VALUES("'"+)");
+                 //   recent.execSQL("INSERT INTO anime VALUES('Beyblade Burst Chouzetsu','Episode 18','https://www04.gogoanimes.tv/beyblade-burst-chouzetsu-episode-18','https://images.gogoanime.tv/cover/beyblade-burst-chouzetsu.png');");
+                String z="'"+ mAnimeList.get(position)+"','"+mEpisodeList.get(position)+"','"+mSiteLink.get(position)+"','"+mImageLink.get(position)+"'";
+                recent.execSQL("INSERT INTO anime VALUES("+z+");");
                 intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
                 context.startActivity(intent);
             }
-        });
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        }); */
+         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context,WatchVideo.class);
@@ -105,11 +109,18 @@ private Context context;
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
             //   ep=Integer.parseInt(h)
+                String z="'"+ holder.title.getText().toString()+"','"+holder.episodeno.getText().toString()+"','"+holder.animeuri.toString()+"','"+mImageLink.get(position)+"'";
+                Log.i("loggingsql",z);
+                recent.execSQL("delete from anime where EPISODELINK='"+holder.animeuri.toString()+"'");
+                Log.i("deletingsql","delete from anime where EPISODELINK='"+holder.animeuri.toString()+"'");
+                recent.execSQL("INSERT INTO anime VALUES("+z+");");
                 intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
+                intent.putExtra("animename",holder.title.getText().toString());
+                intent.putExtra("imagelink",mImageLink.get(position));
                 context.getApplicationContext().startActivity(intent);
             }
         });
-holder.imageofanime.setOnClickListener(new View.OnClickListener() {
+/*holder.imageofanime.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
         Intent intent=new Intent(context,WatchVideo.class);
@@ -117,10 +128,12 @@ holder.imageofanime.setOnClickListener(new View.OnClickListener() {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
       //  ep=Integer.parseInt(h)
+        String z="'"+ mAnimeList.get(position)+"','"+mEpisodeList.get(position)+"','"+mSiteLink.get(position)+"','"+mImageLink.get(position)+"'";
+        recent.execSQL("INSERT INTO anime VALUES("+z+");");
         intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
         context.getApplicationContext().startActivity(intent);
     }
-});
+}); */
        // holder.imageofanime.setImageBitmap(mImage.get(position));
         new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
         //    holder.imageofanime.setImageBitmap(getBitmapFromURL(mImageLink.get(position)));

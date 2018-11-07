@@ -2,6 +2,7 @@ package com.stuffbox.webscraper;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,11 +25,13 @@ import java.util.ArrayList;
 
 public class selectEpisode extends AppCompatActivity {
     String link;
-    String animename;
+    String animename,animenameforrecents;
     private ArrayList<String> mEpisodeList=new ArrayList<>();
     ProgressDialog mProgressDialog;
+    SQLiteDatabase recent;
     private ArrayList<String> mSiteLink = new ArrayList<>();
     episodeadapter mDataAdapter;
+    String imagelink;
     EditText editText;
     @Override
     protected   void onCreate(Bundle savedInstanceState)
@@ -36,8 +39,11 @@ public class selectEpisode extends AppCompatActivity {
      //   Button button=findViewById(R.id.)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodeselector);
+         recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
 
+        animenameforrecents=getIntent().getStringExtra("animename");
         link=getIntent().getStringExtra("link");
+        imagelink=getIntent().getStringExtra("imageurl");
         StringBuffer b=new StringBuffer();
         for(int i=0;i<link.length();i++)
         {
@@ -67,8 +73,12 @@ Button button=findViewById(R.id.episodeselector);
                 Intent intent = new Intent(getApplicationContext(), WatchVideo.class);
                 intent.putExtra("link", mSiteLink.get(episodeno - 1));
                 intent.putExtra("noofepisodes", String.valueOf(mEpisodeList.size()));
-
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                String z="'"+ animenameforrecents+"','Episode "+episodeno+"','"+mSiteLink.get(episodeno-1)+"','"+imagelink+"'";
+                Log.i("loggingsql",z);
+                recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(episodeno-1)+"'");
+                recent.execSQL("INSERT INTO anime VALUES("+z+");");                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("animename",animenameforrecents);
+                intent.putExtra("imagelink",imagelink);
                 getApplicationContext().startActivity(intent);
             }
             else
@@ -135,7 +145,7 @@ for(int i=1;i<=x;i++)
         @Override
         protected void onPostExecute(Void result) {
             RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.xyza);
-            mDataAdapter = new episodeadapter(getApplicationContext(),selectEpisode.this, mSiteLink,mEpisodeList);
+            mDataAdapter = new episodeadapter(getApplicationContext(),selectEpisode.this, mSiteLink,mEpisodeList,imagelink,animenameforrecents);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -145,7 +155,13 @@ for(int i=1;i<=x;i++)
                 Intent intent=new Intent(getApplicationContext(),WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(0));
                 intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
+                String z="'"+ animenameforrecents+"','Episode "+1+"','"+mSiteLink.get(0)+"','"+imagelink+"'";
+                Log.i("loggingsql",z);
+                recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(0)+"'");
 
+                recent.execSQL("INSERT INTO anime VALUES("+z+");");                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("animename",animenameforrecents);
+                intent.putExtra("imagelink",imagelink);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);
             }

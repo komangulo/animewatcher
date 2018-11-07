@@ -86,6 +86,7 @@ public class animefinderadapter extends RecyclerView.Adapter<animefinderadapter.
                 Intent intent=new Intent(context,selectEpisode.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.putExtra("animename",mAnimeList.get(position));
+                intent.putExtra("imageurl",mImageLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.getApplicationContext().startActivity(intent);
             }

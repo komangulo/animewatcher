@@ -28,15 +28,16 @@ public class Recent extends AppCompatActivity {
         setContentView(R.layout.animefinder);
         SQLiteDatabase recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
         Cursor resultSet = recent.rawQuery("Select * from anime",null);
-        resultSet.moveToFirst();
+        resultSet.moveToLast();
         //resultSet.
 
        // Log.i("soja",resultSet.getString(0));
-               for(int i=0;i<resultSet.getCount();i++) {
+               for(int i=resultSet.getCount()-1;i>=0;i--) {
                    mAnimeList.add(resultSet.getString(0));
                    mEpisodeList.add(resultSet.getString(1));
                    mSiteLink.add(resultSet.getString(2));
                    mImageLink.add(resultSet.getString(3));
+                   resultSet.move(-1);
                }
         RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.recyclerview);
         mDataAdapter = new DataAdapter(this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);

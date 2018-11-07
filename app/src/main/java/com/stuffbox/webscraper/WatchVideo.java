@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.display.DisplayManager;
 import android.media.Image;
 import android.media.MediaPlayer;
@@ -72,19 +73,17 @@ import java.util.regex.Pattern;
  */
 
 public class WatchVideo extends Activity {
-    WebView webView;
     String finallink;
     ProgressDialog mProgressDialog;
-    private ImageView imageView;
-TextView qualityvalue;
 ImageButton nextepisode,prevepisode;
-    VideoView videoView;
     String l;
     long time;
     String nextlink;
     int k=0;
     String link;
     int s;
+    SQLiteDatabase recent;
+
     int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
@@ -98,6 +97,7 @@ ImageButton nextepisode,prevepisode;
     View decorView;
     ImageButton qualityup,qualitydown;
     int uiOptions;
+    String animename,imagelink;
     private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
     private long mResumePosition;
@@ -106,7 +106,7 @@ ImageButton nextepisode,prevepisode;
 
         super.onCreate(savedInstanceState);
        setContentView(R.layout.videoviewer);
-
+        recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
          decorView = getWindow().getDecorView();
          uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -202,6 +202,10 @@ qualitydown=findViewById(R.id.qualitydown);
                  link = getIntent().getStringExtra("link");
                 else
                     link=nextlink;
+                animename=getIntent().getStringExtra("animename");
+              //  animelink=link;
+                imagelink=getIntent().getStringExtra("imagelink");
+
                 int gettingindex=link.lastIndexOf("-");
                 int epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
                 Log.i("templog",String.valueOf(epno));
@@ -228,67 +232,8 @@ String value=elements.attr("data-video");
 l=value;
                 }
              else{
-               /*     try {
+              //Deleted Code Comes here
                     l = "https:" + x;
-                    //      Log.i("Checkingsomethingsomething",l);
-                    org.jsoup.nodes.Document vid = Jsoup.connect(l).get();
-                    Log.i("videf", String.valueOf(vid));
-                    Elements elements = vid.select("script").eq(5);
-                    Elements xxa = vid.select("script");
-                    Log.i("bhaichaljanaa", String.valueOf(xxa.size()));
-                    Log.i("check", String.valueOf(elements));
-                    String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-                    Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
-                    Matcher urlMatcher = pattern.matcher(String.valueOf(elements));
-                    ArrayList<String> containedUrls = new ArrayList<String>();
-                    while (urlMatcher.find()) {
-                        containedUrls.add(String.valueOf(elements).substring(urlMatcher.start(0),
-                                urlMatcher.end(0)));
-                    }
-                    if (containedUrls.size() == 0) {
-                        Elements x = vid.select("script").eq(3);
-                        String a = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-                        Pattern z = Pattern.compile(a, Pattern.CASE_INSENSITIVE);
-                        Matcher y = z.matcher(String.valueOf(x));
-                        ArrayList<String> b = new ArrayList<String>();
-                        while (y.find()) {
-                            containedUrls.add(String.valueOf(x).substring(y.start(0),
-                                    y.end(0)));
-                        }
-                    }
-//Log.i("loghoja",String.valueOf(containedUrls.size()));
-                  for (int i = 0; i < containedUrls.size(); i++)
-                     Log.i("Checkblabla", containedUrls.get(i));
-                 //Log.i("Checkblabla",containedUrls.get(3));
-//if(containedUrls.size()==0)
-                    //   Toast.makeText(context,"cannot play video",Toast.LENGTH_SHORT).show();
-                    if(containedUrls.size()==0)
-                    {
-                        Elements elements2=mBlogDocument.select("li[class=mp4]").select("a");
-//Log.i("printing size",String.valueOf(elements.size()));
-                        String value=elements2.attr("data-video");
-//int index=value.indexOf("embed");
-//Log.i("printingindex",String.valueOf(index));
-//StringBuffer str=new StringBuffer(value);
-
-                        //str.replace(index,index+5,"watch");
-                        //                  Log.i("printingx",str.toString());
-
-//Log.i("printing url",value);
-                        //    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
-                        //      Log.i("sizeofmp4link",String.valueOf(mp4link));
-                        //       Elements elements1=mp4link.select("div[id=player]");
-                        //     Log.i("printing url",elements1);
-                        l=value;
-                    }
-                else{    org.jsoup.nodes.Document videostreamlink = Jsoup.connect(containedUrls.get(containedUrls.size() - 1)).get();
-                    if (String.valueOf(videostreamlink).contains("htttps://nl3.")) {
-                        Log.i("chalrhahaiye", "firbhinhichalrha");
-                        videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
-                    }
-                   //     qualityvalue=findViewById(R.id.qualityxy);
-
-                    Log.i("blablablabla", String.valueOf(videostreamlink));*/
                     String vidstreamlink=mElementDataSize.attr("src");
                   //  System.out.println(vidstreamlink);
                     int abc=vidstreamlink.indexOf("id=");
@@ -318,13 +263,10 @@ l=value;
 
                         if (qualitysetter == -1) {
                             qualitysetter = 0;
-                            //     qualitydown.setVisibility(View.GONE);
-                            //     qualityup.setVisibility(View.GONE);
-                            //     qualityvalue.setVisibility(View.GONE);
+
                             Log.i("NHI CHALA", elements1.eq(qualitysetter).attr("href"));
                             org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
-                            //    org.jsoup.nodes.Document d=Jsoup.connect("https://www.rapidvideo.com/d/FV6EZSZWKF").get();
-                            // System.out.println(d.html());
+
                             Elements e = rapidvideo.select("div[class=video]");
                             if(e.size()>0)
                             {
@@ -346,7 +288,6 @@ for(int j=0;j<storingquality.size();j++)
     Log.i("loggingquality",storingquality.get(j));
 }
                     Log.i("zxc", finallink);
-               //     Log.i("marjaao", String.valueOf(elements));
                         } }
              //   }   catch (IOException e) {
             //        e.printStackTrace();
@@ -456,6 +397,11 @@ mProgressDialog.dismiss();
                             //   Log.i("episodeafterchange",String.valueOf(x));
                             nextlink = link.substring(0, index + 1);
                             nextlink = nextlink + episodeno;
+                            String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
+                            Log.i("loggingsql",z);
+                            recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
+
+                            recent.execSQL("INSERT INTO anime VALUES("+z+");");
                             Log.i("nextlinkis", nextlink);
                             new Description(getApplicationContext()).execute();
                         }
@@ -476,6 +422,10 @@ mProgressDialog.dismiss();
                             //   Log.i("episodeafterchange",String.valueOf(x));
                             nextlink = link.substring(0, index + 1);
                             nextlink = nextlink + episodeno;
+                            String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
+                            Log.i("loggingsql",z);
+                            recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
+                            recent.execSQL("INSERT INTO anime VALUES("+z+");");
                             Log.i("nextlinkis", nextlink);
                             new Description(getApplicationContext()).execute();
                         }
