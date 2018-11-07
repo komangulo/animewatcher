@@ -86,6 +86,7 @@ holder.button.setText("Episode no - "+ (position+1));
                 Intent intent=new Intent(context,WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
                 context.getApplicationContext().startActivity(intent);
             }
         });

@@ -77,10 +77,14 @@ public class WatchVideo extends Activity {
     ProgressDialog mProgressDialog;
     private ImageView imageView;
 TextView qualityvalue;
+ImageButton nextepisode,prevepisode;
     VideoView videoView;
     String l;
     long time;
+    String nextlink;
     int k=0;
+    String link;
+    int s;
     int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
@@ -102,6 +106,7 @@ TextView qualityvalue;
 
         super.onCreate(savedInstanceState);
        setContentView(R.layout.videoviewer);
+
          decorView = getWindow().getDecorView();
          uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -116,6 +121,9 @@ TextView qualityvalue;
 
         }
 qualitydown=findViewById(R.id.qualitydown);
+        nextepisode=findViewById(R.id.exo_nextvideo);
+        //nextepisode.setEnabled(true);
+        prevepisode=findViewById(R.id.exo_prevvideo);
         qualityup=findViewById(R.id.qualityup);
              decorView = getWindow().getDecorView();
              uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -194,7 +202,17 @@ qualitydown=findViewById(R.id.qualitydown);
         protected Void doInBackground(Void... params) {
             try {
                 // Connect to the web site
-                String link = getIntent().getStringExtra("link");
+                if(nextlink==null)
+                 link = getIntent().getStringExtra("link");
+                else
+                    link=nextlink;
+                int gettingindex=link.lastIndexOf("-");
+                int epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
+                Log.i("templog",String.valueOf(epno));
+               s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
+             //   Log.i("templog",String.valueOf(s));
+                  Log.i("templog",String.valueOf(s));
+                //if(epno==s)
                 if(link.equals("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
                     mBlogDocument=Jsoup.connect("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
                 else
@@ -287,6 +305,7 @@ l=value;
                         Log.i("chalrhahaiye", "firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
                     }
+                        qualityvalue=findViewById(R.id.qualityxy);
 
                     Log.i("blablablabla", String.valueOf(videostreamlink));
                     Elements elements1 = videostreamlink.select("div[class=dowload]").select("a");
@@ -318,7 +337,6 @@ l=value;
                     }
                         else
                         {
-                        qualityvalue=findViewById(R.id.qualityxy);
 
 
                     finallink = elements1.eq(qualitysetter).attr("href");
@@ -383,6 +401,7 @@ mProgressDialog.dismiss();
                             Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
 
                             //     playerView.getPlayer().release();
+                  //          simpleExoPlayer.stop();
                             MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
                             simpleExoPlayer.prepare(vediosource);
                             playerView.getPlayer().setPlayWhenReady(true);
@@ -408,12 +427,54 @@ mProgressDialog.dismiss();
                            // playerView.getPlayer().release();
                             Log.i("loggintime",String.valueOf(t));
 Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+                    //        simpleExoPlayer.stop();
+
                             MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
                             simpleExoPlayer.prepare(vediosource);
                             playerView.getPlayer().setPlayWhenReady(true);
                             playerView.getPlayer().seekTo(t);
                         }
 
+                    }
+                });
+                nextepisode.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        int index=link.lastIndexOf("-");
+                        int episodeno=Integer.parseInt(link.substring(index+1,link.length()));
+                        Log.i("episodecurrent",String.valueOf(episodeno));
+                       episodeno=episodeno+1;
+                       if(episodeno>s)
+                           Toast.makeText(getApplicationContext(),"Last Episode",Toast.LENGTH_SHORT).show();
+                           else
+                        {
+                            //   Log.i("episodeafterchange",String.valueOf(x));
+                            nextlink = link.substring(0, index + 1);
+                            nextlink = nextlink + episodeno;
+                            Log.i("nextlinkis", nextlink);
+                            new Description(getApplicationContext()).execute();
+                        }
+                    }
+                });
+                prevepisode.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        int index=link.lastIndexOf("-");
+                        int episodeno=Integer.parseInt(link.substring(index+1,link.length()));
+                        Log.i("episodecurrent",String.valueOf(episodeno));
+                        episodeno=episodeno-1;
+                        if(episodeno<1)
+                            Toast.makeText(getApplicationContext(),"First Episode",Toast.LENGTH_SHORT).show();
+                        else
+                        {
+                            //   Log.i("episodeafterchange",String.valueOf(x));
+                            nextlink = link.substring(0, index + 1);
+                            nextlink = nextlink + episodeno;
+                            Log.i("nextlinkis", nextlink);
+                            new Description(getApplicationContext()).execute();
+                        }
                     }
                 });
                 simpleExoPlayer.addListener(new Player.EventListener() {

@@ -25,7 +25,7 @@
         android:paddingTop="4dp"
         android:orientation="horizontal">
 
-        <ImageButton android:id="@id/exo_prev"
+        <ImageButton android:id="@+id/exo_prevvideo"
             style="@style/ExoMediaButton.Previous"/>
 
         <ImageButton android:id="@id/exo_rew"
@@ -45,7 +45,7 @@
         <ImageButton android:id="@id/exo_ffwd"
             style="@style/ExoMediaButton.FastForward"/>
 
-        <ImageButton android:id="@id/exo_next"
+        <ImageButton android:id="@+id/exo_nextvideo"
             style="@style/ExoMediaButton.Next"/>
         <TextView
             android:layout_width="wrap_content"

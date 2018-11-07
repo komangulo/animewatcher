@@ -65,6 +65,8 @@ Button button=findViewById(R.id.episodeselector);
          int  episodeno=   Integer.parseInt(String.valueOf(editText.getText()));
             Intent intent=new Intent(getApplicationContext(),WatchVideo.class);
             intent.putExtra("link",mSiteLink.get(episodeno-1));
+            intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
+
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
 

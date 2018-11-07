@@ -88,7 +88,9 @@ private Context context;
                 Intent intent=new Intent(context,WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
+           //     ep=Integer.parseInt(h)
+                intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
                 context.startActivity(intent);
             }
         });
@@ -98,6 +100,9 @@ private Context context;
                 Intent intent=new Intent(context,WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
+            //   ep=Integer.parseInt(h)
+                intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
                 context.getApplicationContext().startActivity(intent);
             }
         });
@@ -107,6 +112,9 @@ holder.imageofanime.setOnClickListener(new View.OnClickListener() {
         Intent intent=new Intent(context,WatchVideo.class);
         intent.putExtra("link",mSiteLink.get(position));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
+      //  ep=Integer.parseInt(h)
+        intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
         context.getApplicationContext().startActivity(intent);
     }
 });
