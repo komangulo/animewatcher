@@ -19,13 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -41,6 +42,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> 
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
     private Activity mActivity;
     private int lastPosition = -1;
+    int size;
 private Context context;
     SQLiteDatabase recent;
    // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
@@ -109,14 +111,21 @@ private Context context;
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
             //   ep=Integer.parseInt(h)
-                String z="'"+ holder.title.getText().toString()+"','"+holder.episodeno.getText().toString()+"','"+holder.animeuri.toString()+"','"+mImageLink.get(position)+"'";
-                Log.i("loggingsql",z);
+              //  int size=Episodesize(holder.title.getText().toString());
+
+
+                size=0;
                 recent.execSQL("delete from anime where EPISODELINK='"+holder.animeuri.toString()+"'");
                 Log.i("deletingsql","delete from anime where EPISODELINK='"+holder.animeuri.toString()+"'");
+                String z="'"+ holder.title.getText().toString()+"','"+holder.episodeno.getText().toString()+"','"+holder.animeuri.toString()+"','"+mImageLink.get(position)+"'";
+
                 recent.execSQL("INSERT INTO anime VALUES("+z+");");
+                Log.i("loggingsql",z);
+
                 intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
                 intent.putExtra("animename",holder.title.getText().toString());
                 intent.putExtra("imagelink",mImageLink.get(position));
+                intent.putExtra("size",size);
                 context.getApplicationContext().startActivity(intent);
             }
         });
@@ -139,7 +148,66 @@ private Context context;
         //    holder.imageofanime.setImageBitmap(getBitmapFromURL(mImageLink.get(position)));
         // holder.tv_blog_upload_date.setText(mBlogUploadDateList.get(position));
     }
+public static int Episodesize(final String name)
+{
 
+    final int[] count = new int[1];
+Runnable r=new Runnable() {
+    int i;
+    CountDownLatch l=new CountDownLatch(1);
+    @Override
+    public void run() {
+        try {
+
+Log.i("nameis",name);
+Document searching=Jsoup.connect("https://www04.gogoanimes.tv//search.html?keyword="+name).get();
+
+            Elements elements=searching.select("div[class=main_body]").select("div[class=last_episodes]").select("ul[class=items]").select("li");
+            Log.i("haiyanhi",String.valueOf(elements.size()));
+            for(i=0;i<elements.size();i++)
+            {
+
+                String animename=elements.select("div[class=img]").eq(i).select("a").attr("title");
+                if(animename.equals(name))
+                    break;
+
+
+            }
+            String animelink=elements.select("div[class=img]").eq(i).select("a").attr("abs:href");
+            Document f=Jsoup.connect(animelink).get();
+            Elements k=f.select("div[class=anime_video_body]").select("ul[id=episode_page]").select("li");
+            Log.i("checkinga",String.valueOf(k.size()));
+            for(int i=0;i<k.size();i++)
+                Log.i("ptanhikya",String.valueOf(k.select("a").eq(i).html()));
+            String a=String.valueOf(k.select("a").eq(k.size()-1).html());
+            StringBuffer b=new StringBuffer();
+            Log.i("ptanhikya",String.valueOf(a));
+            for(int i=0;i<a.length();i++)
+            {
+                if(a.charAt(i)=='-')
+                {
+                    for(int j=i+1;j<a.length();j++)
+                        b.append(a.charAt(j));
+                }
+            }
+             count[0] = Integer.parseInt(b.toString());
+            Log.i("loggingcount",String.valueOf(count[0]));
+            l.countDown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try{
+            l.await();
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+};
+
+ return count[0];
+}
     @Override
     public int getItemCount() {
         return mAnimeList.size();
