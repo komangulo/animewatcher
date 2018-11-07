@@ -109,7 +109,7 @@ ImageButton nextepisode,prevepisode;
 
          decorView = getWindow().getDecorView();
          uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+               | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
         if(finallink!=null)
         Log.i("voiz",finallink);
@@ -125,10 +125,11 @@ qualitydown=findViewById(R.id.qualitydown);
         //nextepisode.setEnabled(true);
         prevepisode=findViewById(R.id.exo_prevvideo);
         qualityup=findViewById(R.id.qualityup);
-             decorView = getWindow().getDecorView();
-             uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            decorView.setSystemUiVisibility(uiOptions);
+            decorView = getWindow().getDecorView();
+            uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+           decorView.setSystemUiVisibility(uiOptions);
+
             new Description(getApplicationContext()).execute();
             Handler handler = new Handler();
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -137,9 +138,7 @@ qualitydown=findViewById(R.id.qualitydown);
             simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
             playerView = findViewById(R.id.exoplayer);
             playerView.setPlayer(simpleExoPlayer);
-            //First Hide other objects (listview or recyclerview), better hide them using Gone.
-
-            DefaultBandwidthMeter bandwidthMeter1 = new DefaultBandwidthMeter();
+        //    DefaultBandwidthMeter bandwidthMeter1 = new DefaultBandwidthMeter();
             datasourcefactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "tryingexoplayer"));
 
     }
@@ -161,16 +160,16 @@ qualitydown=findViewById(R.id.qualitydown);
             hideSystemUI();
 
         }
+
     }
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+               | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                //| View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-    // Shows the system bars by removing all the flags
-// except for the ones that make the content appear under the system bars.
     private void showSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -182,10 +181,8 @@ qualitydown=findViewById(R.id.qualitydown);
         String desc,x;
         VideoView v;
         Context context;
-     //   Description(VideoView videoView, Context context)
         Description(Context context)
         {
-       //     v=videoView;
             this.context=context;
         }
         @Override
@@ -201,7 +198,6 @@ qualitydown=findViewById(R.id.qualitydown);
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                // Connect to the web site
                 if(nextlink==null)
                  link = getIntent().getStringExtra("link");
                 else
@@ -210,9 +206,7 @@ qualitydown=findViewById(R.id.qualitydown);
                 int epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
                 Log.i("templog",String.valueOf(epno));
                s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
-             //   Log.i("templog",String.valueOf(s));
                   Log.i("templog",String.valueOf(s));
-                //if(epno==s)
                 if(link.equals("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
                     mBlogDocument=Jsoup.connect("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
                 else
@@ -229,25 +223,12 @@ qualitydown=findViewById(R.id.qualitydown);
                 if(mElementDataSize.size()==0)
                 {
 Elements elements=mBlogDocument.select("li[class=mp4]").select("a");
-//Log.i("printing size",String.valueOf(elements.size()));
 String value=elements.attr("data-video");
-//int index=value.indexOf("embed");
-//Log.i("printingindex",String.valueOf(index));
-//StringBuffer str=new StringBuffer(value);
 
-    //str.replace(index,index+5,"watch");
-  //                  Log.i("printingx",str.toString());
-
-//Log.i("printing url",value);
-                //    org.jsoup.nodes.Document mp4link=Jsoup.connect(value).get();
-              //      Log.i("sizeofmp4link",String.valueOf(mp4link));
-            //       Elements elements1=mp4link.select("div[id=player]");
-               //     Log.i("printing url",elements1);
 l=value;
-                //    finallink=elements1;
-                  //  Log.i("oneaaja",String.valueOf(elements1));
                 }
-             else{   try {
+             else{
+               /*     try {
                     l = "https:" + x;
                     //      Log.i("Checkingsomethingsomething",l);
                     org.jsoup.nodes.Document vid = Jsoup.connect(l).get();
@@ -305,10 +286,24 @@ l=value;
                         Log.i("chalrhahaiye", "firbhinhichalrha");
                         videostreamlink = Jsoup.connect(containedUrls.get(4)).get();
                     }
-                        qualityvalue=findViewById(R.id.qualityxy);
+                   //     qualityvalue=findViewById(R.id.qualityxy);
 
-                    Log.i("blablablabla", String.valueOf(videostreamlink));
-                    Elements elements1 = videostreamlink.select("div[class=dowload]").select("a");
+                    Log.i("blablablabla", String.valueOf(videostreamlink));*/
+                    String vidstreamlink=mElementDataSize.attr("src");
+                  //  System.out.println(vidstreamlink);
+                    int abc=vidstreamlink.indexOf("id=");
+                    int k=abc;
+                    while(vidstreamlink.charAt(k)!='=')
+                        k++;
+                    k++;
+                    while(vidstreamlink.charAt(k)!='=')
+                        k++;
+                    String sub=vidstreamlink.substring(abc,k);
+
+                    String downloadlink="https://vidstream.co/download?"+sub;
+                    org.jsoup.nodes.Document reacheddownloadlink=Jsoup.connect(downloadlink).timeout(0).get();
+                  //  Elements gettingdownloadlink=reacheddownloadlink.select("div[class=dowload]").select("a");
+                    Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
                     Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
                     while (elements1.eq(qualitysetter).attr("href").contains("googlevideo"))
@@ -322,19 +317,23 @@ l=value;
                         Log.i("testing",String.valueOf(qualitysetter));
 
                         if (qualitysetter == -1) {
-                       qualitysetter = 0;
-                   //     qualitydown.setVisibility(View.GONE);
-                   //     qualityup.setVisibility(View.GONE);
-                   //     qualityvalue.setVisibility(View.GONE);
-                            Log.i("NHI CHALA",elements1.eq(qualitysetter).attr("href"));
-                            org.jsoup.nodes.Document rapidvideo=Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
-                        //    org.jsoup.nodes.Document d=Jsoup.connect("https://www.rapidvideo.com/d/FV6EZSZWKF").get();
-                           // System.out.println(d.html());
-                            Elements e=rapidvideo.select("div[class=video]");
-                            Elements f=e.eq(e.size()-1).select("span").select("a");
-            finallink=f.eq(f.size()-1).attr("href");
-            Log.i("loggingrapidvideo",finallink);
-                    }
+                            qualitysetter = 0;
+                            //     qualitydown.setVisibility(View.GONE);
+                            //     qualityup.setVisibility(View.GONE);
+                            //     qualityvalue.setVisibility(View.GONE);
+                            Log.i("NHI CHALA", elements1.eq(qualitysetter).attr("href"));
+                            org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
+                            //    org.jsoup.nodes.Document d=Jsoup.connect("https://www.rapidvideo.com/d/FV6EZSZWKF").get();
+                            // System.out.println(d.html());
+                            Elements e = rapidvideo.select("div[class=video]");
+                            if(e.size()>0)
+                            {
+                            Elements f = e.eq(e.size() - 1).select("span").select("a");
+                            finallink = f.eq(f.size() - 1).attr("href");
+                            Log.i("loggingrapidvideo", finallink);
+                        }
+                        }
+
                         else
                         {
 
@@ -347,23 +346,28 @@ for(int j=0;j<storingquality.size();j++)
     Log.i("loggingquality",storingquality.get(j));
 }
                     Log.i("zxc", finallink);
-                    Log.i("marjaao", String.valueOf(elements));} }
-                }   catch (IOException e) {
-                    e.printStackTrace();
-                }
-                }
-                for(int i=0;i<mElementDataSize.size();i++)
-                    Log.i("manik",mElementDataSize.eq(i).html());
-                String videostreamlink=mElementDataSize.html();
-                  Log.i("mani",String.valueOf(mBlogDocument));
-                  Log.i("sda",x);
-                Log.i("videostream",String.valueOf(mElementDataSize.size()));
-                // Locate the content attribute
-   }catch (IOException e) {
-                e.printStackTrace();
+               //     Log.i("marjaao", String.valueOf(elements));
+                        } }
+             //   }   catch (IOException e) {
+            //        e.printStackTrace();
+            //    }
+                } catch (IOException e1) {
+                e1.printStackTrace();
             }
+           // for(int i=0;i<mElementDataSize.size();i++)
+             //       Log.i("manik",mElementDataSize.eq(i).html());
+              //  String videostreamlink=mElementDataSize.html();
+               //   Log.i("mani",String.valueOf(mBlogDocument));
+              //    Log.i("sda",x);
+              //  Log.i("videostream",String.valueOf(mElementDataSize.size()));
+                // Locate the content attribute
             return null;
-        }
+   }
+   //catch (IOException e) {
+     //           e.printStackTrace();
+     //       }
+        //    return null;
+      //  }
 
         @Override
         protected void onPostExecute(Void result) {
@@ -416,7 +420,7 @@ mProgressDialog.dismiss();
                         Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
 
                         qualitysetter++;
-                        if(qualitysetter==storinggoogleurls.size())
+                        if(qualitysetter>=storinggoogleurls.size())
                         {
                             Toast.makeText(context,"Max Quality",Toast.LENGTH_SHORT).show();
                             qualitysetter--;
@@ -426,7 +430,7 @@ mProgressDialog.dismiss();
                             long t=playerView.getPlayer().getCurrentPosition();
                            // playerView.getPlayer().release();
                             Log.i("loggintime",String.valueOf(t));
-Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+//Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
                     //        simpleExoPlayer.stop();
 
                             MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
@@ -572,6 +576,6 @@ public  void  onResume()
             playerView.getPlayer().release();
             super.onBackPressed();
         }
-        return true;
+        return false;
     }
 }

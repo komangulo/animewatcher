@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -41,8 +42,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> 
     private int lastPosition = -1;
 private Context context;
    // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
-   public DataAdapter(Context context,MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
-        this.mActivity = activity;
+   public DataAdapter(Context context, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
         this.mAnimeList = AnimeList;
         this.mSiteLink = SiteList;
         this.context=context;
@@ -84,12 +84,15 @@ private Context context;
             @Override
             public void onClick(View v) {
                // WatchVideo.link=mSiteLink.get(position);
+                SQLiteDatabase recent=context.openOrCreateDatabase("recent",Context.MODE_PRIVATE,null);
 
                 Intent intent=new Intent(context,WatchVideo.class);
                 intent.putExtra("link",mSiteLink.get(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 int ep=holder.episodeno.getText().toString().lastIndexOf(" ");
            //     ep=Integer.parseInt(h)
+             //   recent.execSQL("INSERT INTO anime VALUES('Beyblade Burst Chouzetsu','Episode 18','https://www04.gogoanimes.tv/beyblade-burst-chouzetsu-episode-18','https://images.gogoanime.tv/cover/beyblade-burst-chouzetsu.png');");
+              //  recent.execSQL("INSERT INTO anime VALUES("'"+)");
                 intent.putExtra("noofepisodes",holder.episodeno.getText().toString().substring(ep+1,holder.episodeno.getText().toString().length()));
                 context.startActivity(intent);
             }

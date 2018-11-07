@@ -2,13 +2,17 @@ package com.stuffbox.webscraper;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mSiteLink = new ArrayList<>();
     private ArrayList<String> mImageLink = new ArrayList<>();
     String searchurl;
+    Toolbar  toolbar;
     DataAdapter mDataAdapter;
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
 public static ArrayList<Bitmap> mImage=new ArrayList<>();
@@ -41,6 +46,8 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         setContentView(R.layout.activity_main);
         new Description().execute();
         String x=getIntent().getStringExtra("sentfromhere");
+        SQLiteDatabase recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
+        recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
         if(x!=null)
         {
             finish();
@@ -48,32 +55,57 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
             startActivity(intent);
 
         }
+toolbar=findViewById(R.id.tool);
+        setSupportActionBar(toolbar);
         final EditText editText=findViewById(R.id.edittext);
         Button b=findViewById(R.id.ad);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-String y=editText.getText().toString();
-            Log.i("checking",y);
-StringBuffer s=new StringBuffer(y);
-for(int i=0;i<s.length();i++)
-{
-    if(s.charAt(i)==' ')
-    {
-        s.setCharAt(i,'%');
-    }
-}
-searchurl="https://www8.gogoanimes.tv//search.html?keyword="+s.toString();
-        Log.i("CHECKING",searchurl);
-Intent intent=new Intent(getApplicationContext(),AnimeFinder.class);
-intent.putExtra("searchingstring",searchurl);
-startActivity(intent);
-
+                String y = editText.getText().toString();
+                if ((!(y.equals(""))) && (y.length() > 2))
+                {       Log.i("checking", y);
+                StringBuffer s = new StringBuffer(y);
+                for (int i = 0; i < s.length(); i++) {
+                    if (s.charAt(i) == ' ') {
+                        s.setCharAt(i, '%');
+                    }
+                }
+                searchurl = "https://www8.gogoanimes.tv//search.html?keyword=" + s.toString();
+                Log.i("CHECKING", searchurl);
+                Intent intent = new Intent(getApplicationContext(), AnimeFinder.class);
+                intent.putExtra("searchingstring", searchurl);
+                startActivity(intent);
+            }
+            else
+                if(y.equals(""))
+                {
+                    editText.requestFocus();
+                    editText.setError("Enter anime name");
+                }
+                else
+                {
+                    editText.requestFocus();
+                    editText.setError("Anime name's length should be greater than 2");
+                }
             }
         });
 
     }
-
+    @Override
+    public  boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.drawer, menu);
+        MenuItem menuItem=menu.findItem(R.id.recent);
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+            Intent intent=new Intent(getApplicationContext(),Recent.class);
+            startActivity(intent);
+                return false;
+            }
+        });
+        return true;
+    }
     private class Description extends AsyncTask<Void, Void, Void> {
         String desc;
 
@@ -121,7 +153,7 @@ Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").
         @Override
         protected void onPostExecute(Void result) {
             RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
-            mDataAdapter = new DataAdapter(getApplicationContext(),MainActivity.this, mAnimeList, mSiteLink, mImageLink,mEpisodeList);
+            mDataAdapter = new DataAdapter(getApplicationContext(), mAnimeList, mSiteLink, mImageLink,mEpisodeList);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setDrawingCacheEnabled(true);

@@ -12,7 +12,9 @@
         android:roundIcon="@drawable/psyduck"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,14 +28,18 @@
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-        <activity android:name=".AnimeFinder" />
-        <activity android:name=".selectEpisode" />
+        <activity android:name=".AnimeFinder"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".selectEpisode"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".webvideo"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity android:name=".Recent"
+        android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

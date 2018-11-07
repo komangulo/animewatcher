@@ -47,21 +47,18 @@
 
         <ImageButton android:id="@+id/exo_nextvideo"
             style="@style/ExoMediaButton.Next"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:id="@+id/qualityxy"
-            android:text="Quality changer ->"/>
         <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/qualitydown"
+            android:background="#000"
             android:src="@android:drawable/arrow_down_float"/>
 
         <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/qualityup"
+            android:background="#000"
 
             android:src="@android:drawable/arrow_up_float"/>
     </LinearLayout>

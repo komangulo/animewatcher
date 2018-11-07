@@ -62,14 +62,19 @@ Button button=findViewById(R.id.episodeselector);
     button.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-         int  episodeno=   Integer.parseInt(String.valueOf(editText.getText()));
-            Intent intent=new Intent(getApplicationContext(),WatchVideo.class);
-            intent.putExtra("link",mSiteLink.get(episodeno-1));
-            intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
+            if(!editText.getText().toString().equals("")) {
+                int episodeno = Integer.parseInt(String.valueOf(editText.getText()));
+                Intent intent = new Intent(getApplicationContext(), WatchVideo.class);
+                intent.putExtra("link", mSiteLink.get(episodeno - 1));
+                intent.putExtra("noofepisodes", String.valueOf(mEpisodeList.size()));
 
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity(intent);
-
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+            else
+            {   editText.requestFocus();
+                editText.setError("Enter episode no first");
+            }
         }
     });}
 
@@ -135,6 +140,15 @@ for(int i=1;i<=x;i++)
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setHasFixedSize(true);
+            if(mEpisodeList.size()==1)
+            {
+                Intent intent=new Intent(getApplicationContext(),WatchVideo.class);
+                intent.putExtra("link",mSiteLink.get(0));
+                intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
             for(int i=0;i<mEpisodeList.size();i++)
             {
                 Log.i("checkingit",mEpisodeList.get(i));
