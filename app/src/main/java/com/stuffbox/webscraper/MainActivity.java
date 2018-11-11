@@ -1,9 +1,12 @@
 package com.stuffbox.webscraper;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -29,6 +33,7 @@ import java.util.BitSet;
 
 public class MainActivity extends AppCompatActivity {
 
+    //rivate static final Object Context = ;
     private ProgressDialog mProgressDialog;
    // private String url = "https://www.yudiz.com/blog/";
     private  String url= "https://www8.gogoanimes.tv/";
@@ -44,53 +49,74 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new Description().execute();
-        String x=getIntent().getStringExtra("sentfromhere");
-        SQLiteDatabase recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
-        recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
-        if(x!=null)
+        if (!haveNetworkConnection(this)) {
+            LinearLayout linearLayout=findViewById(R.id.visib);
+            linearLayout.setVisibility(View.GONE);
+            LinearLayout linearLayout1=findViewById(R.id.notvisiblelinearlayout);
+            linearLayout1.setVisibility(View.VISIBLE);
+            RecyclerView recyclerView=findViewById(R.id.act_recyclerview);
+            recyclerView.setVisibility(View.GONE);
+        }
+        else
         {
+        new Description().execute();
+
+        String x = getIntent().getStringExtra("sentfromhere");
+        SQLiteDatabase recent = openOrCreateDatabase("recent", MODE_PRIVATE, null);
+        recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
+        if (x != null) {
             finish();
             Intent intent = new Intent(this, this.getClass());
             startActivity(intent);
 
         }
-toolbar=findViewById(R.id.tool);
+        toolbar = findViewById(R.id.tool);
         setSupportActionBar(toolbar);
-        final EditText editText=findViewById(R.id.edittext);
-        Button b=findViewById(R.id.ad);
+        final EditText editText = findViewById(R.id.edittext);
+        Button b = findViewById(R.id.ad);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String y = editText.getText().toString();
-                if ((!(y.equals(""))) && (y.length() > 2))
-                {       Log.i("checking", y);
-                StringBuffer s = new StringBuffer(y);
-                for (int i = 0; i < s.length(); i++) {
-                    if (s.charAt(i) == ' ') {
-                        s.setCharAt(i, '%');
+                if ((!(y.equals(""))) && (y.length() > 2)) {
+                    Log.i("checking", y);
+                    StringBuffer s = new StringBuffer(y);
+                    for (int i = 0; i < s.length(); i++) {
+                        if (s.charAt(i) == ' ') {
+                            s.setCharAt(i, '%');
+                        }
                     }
-                }
-                searchurl = "https://www8.gogoanimes.tv//search.html?keyword=" + s.toString();
-                Log.i("CHECKING", searchurl);
-                Intent intent = new Intent(getApplicationContext(), AnimeFinder.class);
-                intent.putExtra("searchingstring", searchurl);
-                startActivity(intent);
-            }
-            else
-                if(y.equals(""))
-                {
+                    searchurl = "https://www8.gogoanimes.tv//search.html?keyword=" + s.toString();
+                    Log.i("CHECKING", searchurl);
+                    Intent intent = new Intent(getApplicationContext(), AnimeFinder.class);
+                    intent.putExtra("searchingstring", searchurl);
+                    startActivity(intent);
+                } else if (y.equals("")) {
                     editText.requestFocus();
                     editText.setError("Enter anime name");
-                }
-                else
-                {
+                } else {
                     editText.requestFocus();
                     editText.setError("Anime name's length should be greater than 2");
                 }
             }
         });
+    }
+    }
+    public static boolean haveNetworkConnection(android.content.Context context) {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
 
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
     @Override
     public  boolean onCreateOptionsMenu(Menu menu) {

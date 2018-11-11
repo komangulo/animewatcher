@@ -198,6 +198,7 @@ qualitydown=findViewById(R.id.qualitydown);
 
         @Override
         protected Void doInBackground(Void... params) {
+            finallink=null;
             try {
                 if(nextlink==null)
                  link = getIntent().getStringExtra("link");
