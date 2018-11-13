@@ -253,7 +253,9 @@ l=value;
                     Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
                     Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
-                    while (elements1.eq(qualitysetter).attr("href").contains("googlevideo"))
+                    while (elements1.eq(qualitysetter).attr("href").contains("googlevideo")
+                          ||elements1.eq(qualitysetter).attr("href").contains("googleuser")
+                            )
                     { storinggoogleurls.add(elements1.eq(qualitysetter).attr("href"));
                    // storingquality.add(String.valueOf(elements1.eq(i).text()));
                         String x=String.valueOf(elements1.eq(qualitysetter).text());
@@ -275,6 +277,7 @@ l=value;
                             Elements f = e.eq(e.size() - 1).select("span").select("a");
                             if(f.size()>0)
                             finallink = f.eq(f.size() - 1).attr("href");
+
                             //Log.i("loggingrapidvideo", finallink);
                         }
                         }
@@ -298,11 +301,15 @@ for(int j=0;j<storingquality.size();j++)
                 } catch (IOException e1) {
                 e1.printStackTrace();
             }
+
       runOnUiThread(new Runnable() {
           @Override
           public void run() {
               mProgressDialog.dismiss();
               //     RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
+
+
+
               if(finallink==null)
               {
                   Intent intent = new Intent(context, webvideo.class);
