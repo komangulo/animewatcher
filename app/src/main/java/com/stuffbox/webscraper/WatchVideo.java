@@ -215,6 +215,8 @@ qualitydown=findViewById(R.id.qualitydown);
         @Override
         protected Void doInBackground(Void... params) {
             finallink=null;
+            storinggoogleurls.clear();
+            storingquality.clear();
             try {
                 if(nextlink==null)
                  link = getIntent().getStringExtra("link");
@@ -331,11 +333,12 @@ l=value;
             }
             if(finallink==null) {
                 String rapid = mBlogDocument.select("li[class=rapidvideo]").select("a").attr("data-video");
-               // Log.i("linkis", rapid);
-                if (rapid != null) {
+               Log.i("linkis", rapid);
+                if (rapid != null&&rapid.contains("rapidvideo")) {
                     try
 
                     {
+
                         org.jsoup.nodes.Document scrapingrapidvideo = Jsoup.connect(rapid).get();
                         String rapidvideolink = scrapingrapidvideo.select("video[id=videojs]").select("source").attr("src");
                         finallink = rapidvideolink;

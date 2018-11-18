@@ -30,7 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/plotsummary"
-        android:text="plot summary :"/>
+        android:layout_margin="20dp"
+        android:text="@string/plot_summary"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/xyza"
