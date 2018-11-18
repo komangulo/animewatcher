@@ -66,10 +66,7 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
 
         public MyViewHolder(View view) {
             super(view);
-           // title = (TextView) view.findViewById(R.id.animename);
             button=view.findViewById(R.id.notbutton);
-           // imageofanime=(ImageView) view.findViewById(R.id.img);
-       //     cardView=(CardView) view.findViewById(R.id.cardview);
         }
     }
 
@@ -83,7 +80,6 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-   //     holder.title.setText(mAnimeList.get(position));
         holder.animeuri= Uri.parse(mSiteLink.get(position));
 holder.button.setText("Episode no - "+ (position+1));
 
@@ -95,7 +91,7 @@ holder.button.setText("Episode no - "+ (position+1));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 recent=context.openOrCreateDatabase("recent",context.MODE_PRIVATE,null);
                 String z="'"+ animename+"','Episode "+(position+1)+"','"+mSiteLink.get(position)+"','"+imagelink+"'";
-                Log.i("loggingsql",z);
+             //   Log.i("loggingsql",z);
                 intent.putExtra("animename",animename);
                 intent.putExtra("imagelink",imagelink);
                 recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(position)+"'");
@@ -105,10 +101,7 @@ holder.button.setText("Episode no - "+ (position+1));
                 context.getApplicationContext().startActivity(intent);
             }
         });
-        // holder.imageofanime.setImageBitmap(mImage.get(position));
-     //   new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
-        //    holder.imageofanime.setImageBitmap(getBitmapFromURL(mImageLink.get(position)));
-        // holder.tv_blog_upload_date.setText(mBlogUploadDateList.get(position));
+
     }
 
     @Override

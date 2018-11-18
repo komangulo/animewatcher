@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,7 +60,8 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         }
         else
         {
-        new Description().execute();
+
+       new Description().execute();
 
         String x = getIntent().getStringExtra("sentfromhere");
         SQLiteDatabase recent = openOrCreateDatabase("recent", MODE_PRIVATE, null);
@@ -79,7 +81,7 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
             public void onClick(View view) {
                 String y = editText.getText().toString();
                 if ((!(y.equals(""))) && (y.length() > 2)) {
-                    Log.i("checking", y);
+           //         Log.i("checking", y);
                     StringBuffer s = new StringBuffer(y);
                     for (int i = 0; i < s.length(); i++) {
                         if (s.charAt(i) == ' ') {
@@ -87,7 +89,7 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
                         }
                     }
                     searchurl = "https://www8.gogoanimes.tv//search.html?keyword=" + s.toString();
-                    Log.i("CHECKING", searchurl);
+               //     Log.i("CHECKING", searchurl);
                     Intent intent = new Intent(getApplicationContext(), AnimeFinder.class);
                     intent.putExtra("searchingstring", searchurl);
                     startActivity(intent);
@@ -100,6 +102,7 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
                 }
             }
         });
+
     }
     }
     public static boolean haveNetworkConnection(android.content.Context context) {
@@ -146,26 +149,27 @@ public static ArrayList<Bitmap> mImage=new ArrayList<>();
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void  doInBackground(Void... params) {
             try {
+            //    Log.d("chalja",url);
                 org.jsoup.nodes.Document mBlogDocument = Jsoup.connect(url).get();
-                Log.i("soja",String.valueOf(mBlogDocument));
+          //      Log.i("soja",String.valueOf(mBlogDocument));
                 Elements mElementDataSize=mBlogDocument.select("div[class=last_episodes loaddub]").select("ul[class=items]").select("li");
                 int mElementSize = mElementDataSize.size();
                 for (int i = 0; i < mElementSize; i++) {
                     Elements mElementAnimeName=mBlogDocument.select("p[class=name]").select("a").eq(i);
                     String mAnimenName= mElementAnimeName.text();
-                    Log.i("zy",mAnimenName);
+              //      Log.i("zy",mAnimenName);
 Elements mElementAnimeLink= mBlogDocument.select("p[class=name]").select("a").eq(i);
 String mlink=mElementAnimeLink.attr("abs:href");
 Elements mElementImageLink=mBlogDocument.select("div[class=img]").select("img").eq(2*i);
                     String imagelink=mElementImageLink.attr("src");
                     Elements mELementEpisodeno =mBlogDocument.select("p[class=episode]").eq(i);
-                    Log.i("check",mELementEpisodeno.text());
+             //       Log.i("check",mELementEpisodeno.text());
                     String episodeno=mELementEpisodeno.text();
                     mAnimeList.add(mAnimenName);
                     mSiteLink.add(mlink);
-                    Log.i("imageee",imagelink);
+             //       Log.i("imageee",imagelink);
                     mImageLink.add(imagelink);
                   //  ImageView imageView;
                     mEpisodeList.add(episodeno);

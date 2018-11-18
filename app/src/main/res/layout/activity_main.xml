@@ -41,7 +41,7 @@ android:id="@+id/edittext"
         android:layout_margin="10dp"
         android:textColor="#fff"
         android:id="@+id/ad"
-        android:text="submit"/>
+        android:text="search"/>
 
 </LinearLayout>
    <android.support.v7.widget.RecyclerView

@@ -1,9 +1,11 @@
 package com.stuffbox.webscraper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.display.DisplayManager;
@@ -11,6 +13,7 @@ import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -26,6 +29,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,6 +41,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -55,7 +60,9 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.select.Elements;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,6 +90,7 @@ ImageButton nextepisode,prevepisode;
     String link;
     int s;
     SQLiteDatabase recent;
+    AlertDialog dialog;
 
     int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
@@ -91,10 +99,13 @@ ImageButton nextepisode,prevepisode;
     private PlayerView playerView;
     private ArrayList<String> storinggoogleurls=new ArrayList<>();
     private boolean mExoPlayerFullscreen = false;
+    int episodeno;
+    int current;
     SimpleExoPlayer simpleExoPlayer;
     org.jsoup.nodes.Document mBlogDocument ;
     private int mResumeWindow;
-    int siz;
+    TextView title;
+    int siz,epno;
     View decorView;
     ImageButton qualityup,qualitydown;
     int uiOptions;
@@ -102,6 +113,8 @@ ImageButton nextepisode,prevepisode;
     private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
     private long mResumePosition;
+    ImageButton qualitychanger;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -112,6 +125,9 @@ ImageButton nextepisode,prevepisode;
          uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
+        title=findViewById(R.id.titleofanime);
+        title.setVisibility(View.GONE);
+        qualitychanger=findViewById(R.id.qualitychanger);
         if(finallink!=null)
         Log.i("voiz",finallink);
         if (savedInstanceState != null) {
@@ -209,7 +225,7 @@ qualitydown=findViewById(R.id.qualitydown);
                 imagelink=getIntent().getStringExtra("imagelink");
           //      siz=Integer.parseInt(getIntent().getStringExtra("size"));
                 int gettingindex=link.lastIndexOf("-");
-                int epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
+                 epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
                 Log.i("templog",String.valueOf(epno));
            //    s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
                   Log.i("templog",String.valueOf(s));
@@ -224,7 +240,7 @@ qualitydown=findViewById(R.id.qualitydown);
                 //      Elements mElementDataSize = mBlogDocument.select("div[class=author-date]");
                 Elements mElementDataSize = mBlogDocument.select("iframe");
                 Elements mElement = mBlogDocument.select("span[class=btndownload]");
-                Log.i("mataana", String.valueOf(mElement.size()));
+              //  Log.i("mataana", String.valueOf(mElement.size()));
                 x = mElementDataSize.attr("src");
                 if(mElementDataSize.size()==0)
                 {
@@ -251,7 +267,7 @@ l=value;
                     org.jsoup.nodes.Document reacheddownloadlink=Jsoup.connect(downloadlink).timeout(0).get();
                   //  Elements gettingdownloadlink=reacheddownloadlink.select("div[class=dowload]").select("a");
                     Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
-                    Log.i("sizeof", String.valueOf(elements1.size()));
+        //            Log.i("sizeof", String.valueOf(elements1.size()));
 //Log.i("sahihaiyanhi",elements1.attr("href"));
                     while (elements1.eq(qualitysetter).attr("href").contains("googlevideo")
                           ||elements1.eq(qualitysetter).attr("href").contains("googleuser")
@@ -263,21 +279,32 @@ l=value;
                         storingquality.add(c);
                         qualitysetter++;}
                         qualitysetter--;
-                        Log.i("testing",String.valueOf(qualitysetter));
+      //                  Log.i("testing",String.valueOf(qualitysetter));
 
                         if (qualitysetter == -1) {
                             qualitysetter = 0;
 
-                            Log.i("NHI CHALA", elements1.eq(qualitysetter).attr("href"));
+    //                        Log.i("NHI CHALA", elements1.eq(qualitysetter).attr("href"));
                             org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
 
                             Elements e = rapidvideo.select("div[class=video]");
                             if(e.size()>0)
                             {
                             Elements f = e.eq(e.size() - 1).select("span").select("a");
-                            if(f.size()>0)
-                            finallink = f.eq(f.size() - 1).attr("href");
+                            if(f.size()>0) {
+                                qualitysetter=-1;
+                                for (int m = 0; m < f.size(); m++) {
+                                    storinggoogleurls.add(f.eq(m).attr("href"));
+                                    String p=f.eq(m).select("span").html();
+                                    int index=p.indexOf(" ");
 
+                                    storingquality.add(p.substring(index+1,p.length()));
+                                    qualitysetter++;
+                                }
+                                Log.i("checkingsoea",f.eq(qualitysetter).attr("href"));
+                                finallink=f.eq(qualitysetter).attr("href");
+                                current=qualitysetter;
+                            }
                             //Log.i("loggingrapidvideo", finallink);
                         }
                         }
@@ -287,12 +314,13 @@ l=value;
 
 
                     finallink = elements1.eq(qualitysetter).attr("href");
-                    Log.i("sahihaiyanhi", elements1.eq(qualitysetter ).attr("href"));
-for(int j=0;j<storingquality.size();j++)
-{
-    Log.i("loggingurl",storinggoogleurls.get(j));
-    Log.i("loggingquality",storingquality.get(j));
-}
+                    current=qualitysetter;
+  //                  Log.i("sahihaiyanhi", elements1.eq(qualitysetter ).attr("href"));
+//for(int j=0;j<storingquality.size();j++)
+//{
+  //  Log.i("loggingurl",storinggoogleurls.get(j));
+   // Log.i("loggingquality",storingquality.get(j));
+//}
                     Log.i("zxc", finallink);
                         } }
              //   }   catch (IOException e) {
@@ -301,14 +329,48 @@ for(int j=0;j<storingquality.size();j++)
                 } catch (IOException e1) {
                 e1.printStackTrace();
             }
+            if(finallink==null) {
+                String rapid = mBlogDocument.select("li[class=rapidvideo]").select("a").attr("data-video");
+               // Log.i("linkis", rapid);
+                if (rapid != null) {
+                    try
 
-      runOnUiThread(new Runnable() {
+                    {
+                        org.jsoup.nodes.Document scrapingrapidvideo = Jsoup.connect(rapid).get();
+                        String rapidvideolink = scrapingrapidvideo.select("video[id=videojs]").select("source").attr("src");
+                        finallink = rapidvideolink;
+                     //   Log.i("rapidvideolink is ", rapidvideolink);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                // only for marshmellow and lower versions
+                Connection.Response response = null;
+                try {
+                    response = Jsoup.connect(finallink).followRedirects(false).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (response != null) {
+               //     Log.i("loggingredirectedlink",response.header("location"));
+                    finallink=response.header("location");
+
+                }
+
+            }
+
+
+            runOnUiThread(new Runnable() {
           @Override
           public void run() {
+              title.setText(animename+" Episode "+epno);
+              title.setVisibility(View.VISIBLE);
               mProgressDialog.dismiss();
               //     RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
 
-
+//finallink="https://r6---sn-cvh76n7k.googlevideo.com/videoplayback?id=36560fbb45884d3a&itag=37&source=picasa&begin=0&requiressl=yes&mm=30&mn=sn-cvh76n7k&ms=nxu&mv=m&pl=24&sc=yes&ei=_D_sW72LN8HR4QKq14bACA&susc=ph&app=fife&mime=video/mp4&cnr=14&dur=900.075&lmt=1542190445346413&mt=1542209444&title=&ip=1.186.111.17&ipbits=8&expire=1542216732&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,pl,sc,ei,susc,app,mime,cnr,dur,lmt&signature=57EA640DE18D469F12C469A699109F3D70E567A72A3A1A49B20CDDADFF816E61.17A323B0C27E5D26EFB96CD4DB6409867ECF7CDF72A7646B500DA63E680A4171&key=us0";
 
               if(finallink==null)
               {
@@ -328,7 +390,7 @@ for(int j=0;j<storingquality.size();j++)
                   qualitydown.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-                          Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
+                         // Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
 
                           qualitysetter--;
                           if(qualitysetter<0)
@@ -337,8 +399,8 @@ for(int j=0;j<storingquality.size();j++)
                           else
                           {
                               long t=playerView.getPlayer().getCurrentPosition();
-                              Log.i("loggintime",String.valueOf(t));
-                              Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+                        //      Log.i("loggintime",String.valueOf(t));
+                        //      Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
 
                               //     playerView.getPlayer().release();
                               //          simpleExoPlayer.stop();
@@ -353,7 +415,7 @@ for(int j=0;j<storingquality.size();j++)
                   qualityup.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-                          Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
+                   //       Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
 
                           qualitysetter++;
                           if(qualitysetter>=storinggoogleurls.size())
@@ -365,7 +427,7 @@ for(int j=0;j<storingquality.size();j++)
                           {
                               long t=playerView.getPlayer().getCurrentPosition();
                               // playerView.getPlayer().release();
-                              Log.i("loggintime",String.valueOf(t));
+                         //     Log.i("loggintime",String.valueOf(t));
 //Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
                               //        simpleExoPlayer.stop();
 
@@ -375,6 +437,33 @@ for(int j=0;j<storingquality.size();j++)
                               playerView.getPlayer().seekTo(t);
                           }
 
+                      }
+                  });
+                   final String[] a= storingquality.toArray(new String[0]);
+                  qualitychanger.setOnClickListener(new View.OnClickListener() {
+                      @Override
+                      public void onClick(View view) {
+                          AlertDialog.Builder builder = new AlertDialog.Builder(WatchVideo.this);
+                          builder.setTitle("Quality")
+                                  .setItems(a, new DialogInterface.OnClickListener() {
+                                      public void onClick(DialogInterface dialog, int which) {
+                                          // The 'which' argument contains the index position
+                                          // of the selected item
+                                          if(current!=which)
+                                          {
+                                          long t=playerView.getPlayer().getCurrentPosition();
+                                          // playerView.getPlayer().release();
+                                          //     Log.i("loggintime",String.valueOf(t));
+//Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
+                                          //        simpleExoPlayer.stop();
+                                            current=which;
+                                          MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(which)));
+                                          simpleExoPlayer.prepare(vediosource);
+                                          playerView.getPlayer().setPlayWhenReady(true);
+                                          playerView.getPlayer().seekTo(t);
+                                      }}
+                                  });
+                          builder.show();
                       }
                   });
 
@@ -396,7 +485,28 @@ for(int j=0;j<storingquality.size();j++)
 
                       @Override
                       public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
+                       if(playbackState==ExoPlayer.STATE_ENDED)
+                       {
+                           int index=link.lastIndexOf("-");
+                           episodeno=Integer.parseInt(link.substring(index+1,link.length()));
+                       //    Log.i("episodecurrent",String.valueOf(episodeno));
+                           episodeno=episodeno+1;
+                           if(episodeno>siz)
+                               Toast.makeText(getApplicationContext(),"Last Episode",Toast.LENGTH_SHORT).show();
+                           else
+                           {
+                               //   Log.i("episodeafterchange",String.valueOf(x));
+                               nextlink = link.substring(0, index + 1);
+                               nextlink = nextlink + episodeno;
+                               String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
+                           //    Log.i("loggingsql",z);
+                               recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
+simpleExoPlayer.stop();
+                               recent.execSQL("INSERT INTO anime VALUES("+z+");");
+                           //    Log.i("nextlinkis", nextlink);
+                               new Description(getApplicationContext()).execute();
+                           }
+                       }
                       }
 
                       @Override
@@ -443,7 +553,7 @@ for(int j=0;j<storingquality.size();j++)
             try {
                 org.jsoup.nodes.Document searching = Jsoup.connect(searchurl).get();
                 Elements elements=searching.select("div[class=main_body]").select("div[class=last_episodes]").select("ul[class=items]").select("li");
-                Log.i("haiyanhi",String.valueOf(elements.size()));
+         //       Log.i("haiyanhi",String.valueOf(elements.size()));
                 for(int i=0;i<elements.size();i++)
                 {
                     String animelink=elements.select("div[class=img]").eq(i).select("a").attr("abs:href");
@@ -453,17 +563,17 @@ for(int j=0;j<storingquality.size();j++)
                    // String imagelink=elements.select("div[class=img]").eq(i).select("img").attr("src");
 
 
-                    Log.i("working",animelink);
+                 //   Log.i("working",animelink);
                 }
                  searching = Jsoup.connect(link).get();
-                Log.i("zyx",String.valueOf(searching));
+             //   Log.i("zyx",String.valueOf(searching));
                  elements=searching.select("div[class=anime_video_body]").select("ul[id=episode_page]").select("li");
-                Log.i("checkinga",String.valueOf(elements.size()));
-                for(int i=0;i<elements.size();i++)
-                    Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
+             //   Log.i("checkinga",String.valueOf(elements.size()));
+             //   for(int i=0;i<elements.size();i++)
+           //         Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
                 String a=String.valueOf(elements.select("a").eq(elements.size()-1).html());
                 StringBuffer b=new StringBuffer();
-                Log.i("ptanhikya",String.valueOf(a));
+           //     Log.i("ptanhikya",String.valueOf(a));
                 for(int i=0;i<a.length();i++)
                 {
                     if(a.charAt(i)=='-')
@@ -494,8 +604,8 @@ for(int j=0;j<storingquality.size();j++)
                 public void onClick(View view) {
 
                     int index=link.lastIndexOf("-");
-                    int episodeno=Integer.parseInt(link.substring(index+1,link.length()));
-                    Log.i("episodecurrent",String.valueOf(episodeno));
+                     episodeno=Integer.parseInt(link.substring(index+1,link.length()));
+              //      Log.i("episodecurrent",String.valueOf(episodeno));
                     episodeno=episodeno+1;
                     if(episodeno>siz)
                         Toast.makeText(getApplicationContext(),"Last Episode",Toast.LENGTH_SHORT).show();
@@ -505,11 +615,11 @@ for(int j=0;j<storingquality.size();j++)
                         nextlink = link.substring(0, index + 1);
                         nextlink = nextlink + episodeno;
                         String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
-                        Log.i("loggingsql",z);
+                   //     Log.i("loggingsql",z);
                         recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
 
                         recent.execSQL("INSERT INTO anime VALUES("+z+");");
-                        Log.i("nextlinkis", nextlink);
+                   //     Log.i("nextlinkis", nextlink);
                         new Description(getApplicationContext()).execute();
                     }
                 }
@@ -520,7 +630,7 @@ for(int j=0;j<storingquality.size();j++)
 
                     int index=link.lastIndexOf("-");
                     int episodeno=Integer.parseInt(link.substring(index+1,link.length()));
-                    Log.i("episodecurrent",String.valueOf(episodeno));
+                  //  Log.i("episodecurrent",String.valueOf(episodeno));
                     episodeno=episodeno-1;
                     if(episodeno<1)
                         Toast.makeText(getApplicationContext(),"First Episode",Toast.LENGTH_SHORT).show();
@@ -530,10 +640,10 @@ for(int j=0;j<storingquality.size();j++)
                         nextlink = link.substring(0, index + 1);
                         nextlink = nextlink + episodeno;
                         String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
-                        Log.i("loggingsql",z);
+                   //     Log.i("loggingsql",z);
                         recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
                         recent.execSQL("INSERT INTO anime VALUES("+z+");");
-                        Log.i("nextlinkis", nextlink);
+                   //     Log.i("nextlinkis", nextlink);
                         new Description(getApplicationContext()).execute();
                     }
                 }

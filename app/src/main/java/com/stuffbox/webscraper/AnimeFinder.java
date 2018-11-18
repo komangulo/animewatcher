@@ -32,7 +32,7 @@ public class AnimeFinder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.animefinder);
         searchurl=getIntent().getStringExtra("searchingstring");
-        Log.i("chalrhahaikya",searchurl);
+     //   Log.i("chalrhahaikya",searchurl);
 
         new Searching().execute();
     }
@@ -55,22 +55,22 @@ public class AnimeFinder extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             try {
                 org.jsoup.nodes.Document searching = Jsoup.connect(searchurl).get();
-                Log.i("asas",String.valueOf(searching));
+             //   Log.i("asas",String.valueOf(searching));
                 Elements elements=searching.select("div[class=main_body]").select("div[class=last_episodes]").select("ul[class=items]").select("li");
-                Log.i("haiyanhi",String.valueOf(elements.size()));
+              //  Log.i("haiyanhi",String.valueOf(elements.size()));
                 for(int i=0;i<elements.size();i++)
                 {
                     String animelink=elements.select("div[class=img]").eq(i).select("a").attr("abs:href");
                     String animename=elements.select("div[class=img]").eq(i).select("a").attr("title");
                     String imagelink=elements.select("div[class=img]").eq(i).select("img").attr("src");
-                    Log.i("working2",animename);
-                    Log.i("working1",imagelink);
+               //     Log.i("working2",animename);
+                //    Log.i("working1",imagelink);
                     mAnimeList.add(animename);
                     mImageLink.add(imagelink);
                     mSiteLink.add(animelink);
                     mEpisodeList.add("");
 
-                    Log.i("working",animelink);
+               //     Log.i("working",animelink);
                 }
             }
             catch (IOException e) {

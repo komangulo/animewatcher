@@ -10,10 +10,27 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:textColor="#000"
+    android:layout_margin="20dp"
+    android:background="#07000000"
+    android:textSize="15sp"
+    android:id="@+id/titleofanime"
+    android:text="title"/>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
+
+android:layout_alignParentBottom="true"
     android:layoutDirection="ltr"
     android:background="#CC000000"
     android:orientation="vertical">
@@ -27,23 +44,17 @@
 
         <ImageButton android:id="@+id/exo_prevvideo"
             style="@style/ExoMediaButton.Previous"/>
-
         <ImageButton android:id="@id/exo_rew"
             style="@style/ExoMediaButton.Rewind"/>
-
-
-
-        <ImageButton android:id="@id/exo_repeat_toggle"
-            style="@style/ExoMediaButton"/>
-
         <ImageButton android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"/>
 
         <ImageButton android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"/>
-
         <ImageButton android:id="@id/exo_ffwd"
             style="@style/ExoMediaButton.FastForward"/>
+
+
 
         <ImageButton android:id="@+id/exo_nextvideo"
             style="@style/ExoMediaButton.Next"/>
@@ -51,16 +62,26 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/qualitydown"
-            android:background="#000"
+            android:visibility="gone"
+
+            android:background="#CC000000"
             android:src="@android:drawable/arrow_down_float"/>
 
         <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/qualityup"
-            android:background="#000"
+            android:visibility="gone"
+            android:background="#CC000000"
 
             android:src="@android:drawable/arrow_up_float"/>
+        <ImageButton
+            android:layout_width="50dp"
+            android:id="@+id/qualitychanger"
+            android:layout_height="50dp"
+            android:background="#CC000000"
+
+            android:src="@drawable/settings"/>
     </LinearLayout>
 
     <LinearLayout
@@ -83,6 +104,8 @@
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@id/exo_progress"
             android:layout_width="0dp"
+            app:played_color="#FF0000"
+            app:unplayed_color="#808080		"
             android:layout_weight="1"
             android:layout_height="26dp"/>
 
@@ -99,3 +122,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</RelativeLayout>

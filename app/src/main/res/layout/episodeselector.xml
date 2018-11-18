@@ -26,6 +26,12 @@
             android:id="@+id/episodeselector"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/plotsummary"
+        android:text="plot summary :"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/xyza"
         android:layout_width="match_parent"

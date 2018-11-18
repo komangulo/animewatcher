@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
@@ -33,6 +34,8 @@ public class selectEpisode extends AppCompatActivity {
     episodeadapter mDataAdapter;
     String imagelink;
     EditText editText;
+    TextView plotsummary;
+    String summary;
     @Override
     protected   void onCreate(Bundle savedInstanceState)
     {
@@ -40,7 +43,7 @@ public class selectEpisode extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodeselector);
          recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
-
+        plotsummary=findViewById(R.id.plotsummary);
         animenameforrecents=getIntent().getStringExtra("animename");
         link=getIntent().getStringExtra("link");
         imagelink=getIntent().getStringExtra("imageurl");
@@ -59,7 +62,7 @@ public class selectEpisode extends AppCompatActivity {
 
         }
 
-        Log.i("marjabe",b.toString());
+    //    Log.i("marjabe",b.toString());
 animename=b.toString();
         new Searching().execute();
  editText=findViewById(R.id.episodeno);
@@ -72,9 +75,10 @@ Button button=findViewById(R.id.episodeselector);
                 int episodeno = Integer.parseInt(String.valueOf(editText.getText()));
                 Intent intent = new Intent(getApplicationContext(), WatchVideo.class);
                 intent.putExtra("link", mSiteLink.get(episodeno - 1));
+
                 intent.putExtra("noofepisodes", String.valueOf(mEpisodeList.size()));
                 String z="'"+ animenameforrecents+"','Episode "+episodeno+"','"+mSiteLink.get(episodeno-1)+"','"+imagelink+"'";
-                Log.i("loggingsql",z);
+         //       Log.i("loggingsql",z);
                 recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(episodeno-1)+"'");
                 recent.execSQL("INSERT INTO anime VALUES("+z+");");                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("animename",animenameforrecents);
@@ -108,14 +112,17 @@ Button button=findViewById(R.id.episodeselector);
             try {
 
                 org.jsoup.nodes.Document searching = Jsoup.connect(link).get();
-                Log.i("zyx",String.valueOf(searching));
+             //   Log.i("zyx",String.valueOf(searching));
                 Elements elements=searching.select("div[class=anime_video_body]").select("ul[id=episode_page]").select("li");
-                Log.i("checkinga",String.valueOf(elements.size()));
-             for(int i=0;i<elements.size();i++)
-                 Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
+           //     Log.i("checkinga",String.valueOf(elements.size()));
+          //   for(int i=0;i<elements.size();i++)
+           //      Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
+                summary=searching.select("p[class=type]").eq(1).html();
+                int index=summary.lastIndexOf(">");
+                summary=summary.substring(index+1,summary.length());
              String a=String.valueOf(elements.select("a").eq(elements.size()-1).html());
              StringBuffer b=new StringBuffer();
-                Log.i("ptanhikya",String.valueOf(a));
+          //      Log.i("ptanhikya",String.valueOf(a));
                 for(int i=0;i<a.length();i++)
                 {
                     if(a.charAt(i)=='-')
@@ -125,7 +132,7 @@ Button button=findViewById(R.id.episodeselector);
                     }
                 }
                 int x= Integer.parseInt(b.toString());
-                Log.i("ptanhikya",String.valueOf(x));
+             //   Log.i("ptanhikya",String.valueOf(x));
 for(int i=1;i<=x;i++)
 {
     String c ="https://www8.gogoanimes.tv/"+animename+"-episode-"+i;
@@ -156,7 +163,7 @@ for(int i=1;i<=x;i++)
                 intent.putExtra("link",mSiteLink.get(0));
                 intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
                 String z="'"+ animenameforrecents+"','Episode "+1+"','"+mSiteLink.get(0)+"','"+imagelink+"'";
-                Log.i("loggingsql",z);
+             //   Log.i("loggingsql",z);
                 recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(0)+"'");
 
                 recent.execSQL("INSERT INTO anime VALUES("+z+");");                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -165,12 +172,12 @@ for(int i=1;i<=x;i++)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);
             }
-            for(int i=0;i<mEpisodeList.size();i++)
-            {
-                Log.i("checkingit",mEpisodeList.get(i));
-                Log.i("checkingthat",mSiteLink.get(i));
+      //      for(int i=0;i<mEpisodeList.size();i++)
+       //     {
+            //    Log.i("checkingit",mEpisodeList.get(i));
+           //     Log.i("checkingthat",mSiteLink.get(i));
 
-            }
+       //     }
 
   //          mRecyclerView.setDrawingCacheEnabled(true);
      //       mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
@@ -180,7 +187,7 @@ for(int i=1;i<=x;i++)
             mRecyclerView.setAdapter(mDataAdapter);
             mProgressDialog.dismiss();
             editText.setHint("Episode no between 1 to "+mEpisodeList.size());
-
+            plotsummary.setText(plotsummary.getText()+" "+summary);
 editText.setFilters(new InputFilter[]{
         new InputFilterMinMax(1,mEpisodeList.size())
 });        }
