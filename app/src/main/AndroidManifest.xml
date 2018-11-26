@@ -29,8 +29,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-        <activity android:name=".AnimeFinder"
-            android:configChanges="orientation|screenSize"/>
         <activity android:name=".selectEpisode"
             android:configChanges="orientation|screenSize"/>
         <activity

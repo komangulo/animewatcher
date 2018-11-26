@@ -37,12 +37,10 @@ public class animefinderadapter extends RecyclerView.Adapter<animefinderadapter.
     //  private ArrayList<Bitmap> mImage = new ArrayList<>();
     private ArrayList<String > mImageLink=new ArrayList<>();
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
-    private Activity mActivity;
     private int lastPosition = -1;
     private Context context;
     // public DataAdapter(MainActivity activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<Bitmap> ImageList,ArrayList<String> EpisodeList) {
-    public animefinderadapter(Context context,AnimeFinder activity, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
-        this.mActivity = activity;
+    public animefinderadapter(Context context, ArrayList<String> AnimeList, ArrayList<String> SiteList, ArrayList<String> ImageList, ArrayList<String> EpisodeList) {
         this.mAnimeList = AnimeList;
         this.mSiteLink = SiteList;
         this.context=context;

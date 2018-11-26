@@ -20,53 +20,44 @@
         >
 
     </android.support.v7.widget.Toolbar>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:orientation="horizontal"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:id="@+id/visib"
-    android:layout_height="wrap_content">
-    <EditText
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="10dp"
-android:id="@+id/edittext"
 
-        android:hint="Anime name"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="#fff"
-        android:id="@+id/ad"
-        android:text="search"/>
-
-</LinearLayout>
-   <android.support.v7.widget.RecyclerView
-    android:id="@+id/act_recyclerview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-   </android.support.v7.widget.RecyclerView>
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:id="@+id/notvisiblelinearlayout"
-    android:visibility="gone"
-    android:layout_height="match_parent">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No Internet Connection"/>
-
-    <ImageView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/act_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
 
-        android:src="@drawable/no"/>
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/notvisiblelinearlayout"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Internet Connection"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+
+            android:src="@drawable/no"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 
 </LinearLayout>
 
