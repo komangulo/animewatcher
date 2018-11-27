@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     Searching x=new Searching();
     Toolbar  toolbar;
     DataAdapter mDataAdapter;
+    animefinderadapter   DataAdapter;
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
     public static ArrayList<Bitmap> mImage=new ArrayList<>();
     @Override
@@ -108,7 +109,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         getMenuInflater().inflate(R.menu.drawer, menu);
         MenuItem search=menu.findItem(R.id.action_search);
+        MenuItem animelist=menu.findItem(R.id.animelist);
+        animelist.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+            Intent i=new Intent(getApplicationContext(),AnimeList.class);
+            startActivity(i);
 
+                return false;
+            }
+        });
         MenuItem menuItem=menu.findItem(R.id.recent);
         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -164,6 +174,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             try {
                 org.jsoup.nodes.Document searching = Jsoup.connect(searchurl).get();
                 //   Log.i("asas",String.valueOf(searching));
+                DataAdapter=new animefinderadapter();
+                DataAdapter.notifyItemRangeRemoved(0,mAnimeList.size());
+
                 mAnimeList.clear();
                 mSiteLink.clear();
                 mImageLink.clear();
@@ -196,8 +209,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             RecyclerView  recyclerView=findViewById(R.id.recyclerview);
             recyclerView.setVisibility(View.VISIBLE);
             //   mProgressDialog.dismiss();
-
-            animefinderadapter   mDataAdapter = new animefinderadapter(getApplicationContext(), mAnimeList, mSiteLink, mImageLink,mEpisodeList);
+           DataAdapter = new animefinderadapter(getApplicationContext(), mAnimeList, mSiteLink, mImageLink,mEpisodeList);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setHasFixedSize(true);
             recyclerView.setDrawingCacheEnabled(true);
@@ -205,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             recyclerView.setItemViewCacheSize(30);
 
             recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.setAdapter(mDataAdapter);
+            recyclerView.setAdapter(DataAdapter);
 
         }
     }

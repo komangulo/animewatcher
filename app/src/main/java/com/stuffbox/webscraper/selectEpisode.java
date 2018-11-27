@@ -9,8 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
-import android.text.Spanned;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,7 +45,7 @@ public class selectEpisode extends AppCompatActivity {
         plotsummary=findViewById(R.id.plotsummary);
         animenameforrecents=getIntent().getStringExtra("animename");
         link=getIntent().getStringExtra("link");
-        imagelink=getIntent().getStringExtra("imageurl");
+    //    imagelink=getIntent().getStringExtra("imageurl");
         StringBuffer b=new StringBuffer();
         for(int i=0;i<link.length();i++)
         {
@@ -120,6 +119,7 @@ Button button=findViewById(R.id.episodeselector);
                 summary=searching.select("p[class=type]").eq(1).html();
                 int index=summary.lastIndexOf(">");
                 summary=summary.substring(index+1,summary.length());
+                imagelink=searching.select("div[class=anime_info_body_bg]").select("img").attr("src");
              String a=String.valueOf(elements.select("a").eq(elements.size()-1).html());
              StringBuffer b=new StringBuffer();
           //      Log.i("ptanhikya",String.valueOf(a));

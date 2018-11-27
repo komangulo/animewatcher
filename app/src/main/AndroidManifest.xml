@@ -39,6 +39,8 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity android:name=".Recent"
         android:configChanges="orientation|screenSize"/>
+        <activity android:name=".AnimeList"
+            android:label="Anime List"/>
     </application>
 
 </manifest>

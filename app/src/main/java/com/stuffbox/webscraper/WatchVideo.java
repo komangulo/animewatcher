@@ -340,7 +340,13 @@ l=value;
                     {
 
                         org.jsoup.nodes.Document scrapingrapidvideo = Jsoup.connect(rapid).get();
+                        qualitysetter=-1;
                         String rapidvideolink = scrapingrapidvideo.select("video[id=videojs]").select("source").attr("src");
+                        storinggoogleurls.add(rapidvideolink);
+                        storingquality.add(scrapingrapidvideo.select("video[id=videojs]").select("source").attr("title"));
+                        qualitysetter++;
+                        current=qualitysetter;
+
                         finallink = rapidvideolink;
                      //   Log.i("rapidvideolink is ", rapidvideolink);
                     } catch (IOException e) {
