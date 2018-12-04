@@ -8,14 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -26,6 +25,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -62,10 +63,11 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
 
         private Uri animeuri,imageuri;
      //   private ImageView imageofanime;
-        private Button button;
-
+        private TextView button;
+        private  LinearLayout layout;
         public MyViewHolder(View view) {
             super(view);
+            layout=view.findViewById(R.id.linearlayouta);
             button=view.findViewById(R.id.notbutton);
         }
     }
@@ -81,9 +83,9 @@ public class episodeadapter extends RecyclerView.Adapter<episodeadapter.MyViewHo
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.animeuri= Uri.parse(mSiteLink.get(position));
-holder.button.setText("Episode no - "+ (position+1));
+holder.button.setText(animename+" Episode "+ (position+1));
 
-      holder.button.setOnClickListener(new View.OnClickListener() {
+      holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(context,WatchVideo.class);
@@ -96,7 +98,8 @@ holder.button.setText("Episode no - "+ (position+1));
                 intent.putExtra("imagelink",imagelink);
                 recent.execSQL("delete from anime where EPISODELINK='"+mSiteLink.get(position)+"'");
 
-                recent.execSQL("INSERT INTO anime VALUES("+z+");");                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                recent.execSQL("INSERT INTO anime VALUES("+z+");");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("noofepisodes",String.valueOf(mEpisodeList.size()));
                 context.getApplicationContext().startActivity(intent);
             }

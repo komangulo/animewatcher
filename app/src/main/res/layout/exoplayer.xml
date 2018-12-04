@@ -80,7 +80,6 @@ android:layout_alignParentBottom="true"
             android:id="@+id/qualitychanger"
             android:layout_height="50dp"
             android:background="#CC000000"
-
             android:src="@drawable/settings"/>
     </LinearLayout>
 

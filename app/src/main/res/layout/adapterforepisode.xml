@@ -7,10 +7,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/linearlayouta"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-       <Button
+       <TextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:id="@+id/notbutton"

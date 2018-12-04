@@ -5,23 +5,28 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.text.InputFilter;
 
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class selectEpisode extends AppCompatActivity {
     String link;
@@ -32,7 +37,7 @@ public class selectEpisode extends AppCompatActivity {
     private ArrayList<String> mSiteLink = new ArrayList<>();
     episodeadapter mDataAdapter;
     String imagelink;
-    EditText editText;
+    TextInputEditText editText;
     TextView plotsummary;
     String summary;
     @Override
@@ -42,7 +47,7 @@ public class selectEpisode extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodeselector);
          recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
-        plotsummary=findViewById(R.id.plotsummary);
+    //    plotsummary=findViewById(R.id.plotsummary);
         animenameforrecents=getIntent().getStringExtra("animename");
         link=getIntent().getStringExtra("link");
     //    imagelink=getIntent().getStringExtra("imageurl");
@@ -116,9 +121,10 @@ Button button=findViewById(R.id.episodeselector);
            //     Log.i("checkinga",String.valueOf(elements.size()));
           //   for(int i=0;i<elements.size();i++)
            //      Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
-                summary=searching.select("p[class=type]").eq(1).html();
-                int index=summary.lastIndexOf(">");
-                summary=summary.substring(index+1,summary.length());
+        //        summary=searching.select("p[class=type]").eq(1).html();
+         ///       int index=summary.lastIndexOf(">");
+          //      summary=summary.substring(index+1,summary.length());
+           //     summary=summary.replace("&nbsp;","");
                 imagelink=searching.select("div[class=anime_info_body_bg]").select("img").attr("src");
              String a=String.valueOf(elements.select("a").eq(elements.size()-1).html());
              StringBuffer b=new StringBuffer();
@@ -155,7 +161,7 @@ for(int i=1;i<=x;i++)
             mDataAdapter = new episodeadapter(getApplicationContext(),selectEpisode.this, mSiteLink,mEpisodeList,imagelink,animenameforrecents);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
             mRecyclerView.setHasFixedSize(true);
             if(mEpisodeList.size()==1)
             {
@@ -187,7 +193,7 @@ for(int i=1;i<=x;i++)
             mRecyclerView.setAdapter(mDataAdapter);
             mProgressDialog.dismiss();
             editText.setHint("Episode no between 1 to "+mEpisodeList.size());
-            plotsummary.setText(plotsummary.getText()+" "+summary);
+        //    plotsummary.setText("Plot Summary : " +" "+summary);
 editText.setFilters(new InputFilter[]{
         new InputFilterMinMax(1,mEpisodeList.size())
 });        }

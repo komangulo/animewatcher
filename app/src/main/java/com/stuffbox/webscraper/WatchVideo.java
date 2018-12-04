@@ -2,40 +2,21 @@ package com.stuffbox.webscraper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.display.DisplayManager;
-import android.media.Image;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
-import android.widget.Spinner;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -62,24 +43,19 @@ import com.google.android.exoplayer2.util.Util;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
+import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.WatchEvent;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by jasbe on 22-08-2018.
  */
 
-public class WatchVideo extends Activity {
+public class WatchVideo extends AppCompatActivity {
     String finallink;
     ProgressDialog mProgressDialog;
 ImageButton nextepisode,prevepisode;
@@ -91,7 +67,7 @@ ImageButton nextepisode,prevepisode;
     int s;
     SQLiteDatabase recent;
     AlertDialog dialog;
-
+    ProgressBar progressBar;
     int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
@@ -105,15 +81,15 @@ ImageButton nextepisode,prevepisode;
     org.jsoup.nodes.Document mBlogDocument ;
     private int mResumeWindow;
     TextView title;
-    int siz,epno;
-    View decorView;
+    String nextvideolink=null,previousvideolink=null;
+    int epno;
     ImageButton qualityup,qualitydown;
-    int uiOptions;
     String animename,imagelink;
     private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
     private long mResumePosition;
     ImageButton qualitychanger;
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +97,13 @@ ImageButton nextepisode,prevepisode;
         super.onCreate(savedInstanceState);
        setContentView(R.layout.videoviewer);
         recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
-         decorView = getWindow().getDecorView();
-         uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-               | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
         title=findViewById(R.id.titleofanime);
         title.setVisibility(View.GONE);
+        progressBar=findViewById(R.id.buffer);
         qualitychanger=findViewById(R.id.qualitychanger);
         if(finallink!=null)
         Log.i("voiz",finallink);
@@ -139,7 +116,6 @@ ImageButton nextepisode,prevepisode;
         }
 qualitydown=findViewById(R.id.qualitydown);
         nextepisode=findViewById(R.id.exo_nextvideo);
-        //nextepisode.setEnabled(true);
         prevepisode=findViewById(R.id.exo_prevvideo);
         qualityup=findViewById(R.id.qualityup);
             decorView = getWindow().getDecorView();
@@ -148,14 +124,12 @@ qualitydown=findViewById(R.id.qualitydown);
            decorView.setSystemUiVisibility(uiOptions);
 
             new Description(getApplicationContext()).execute();
-            Handler handler = new Handler();
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
             TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
             DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
             simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
             playerView = findViewById(R.id.exoplayer);
             playerView.setPlayer(simpleExoPlayer);
-        //    DefaultBandwidthMeter bandwidthMeter1 = new DefaultBandwidthMeter();
             datasourcefactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "tryingexoplayer"));
 
     }
@@ -165,7 +139,6 @@ qualitydown=findViewById(R.id.qualitydown);
         outState.putInt(STATE_RESUME_WINDOW, mResumeWindow);
         outState.putLong(STATE_RESUME_POSITION, mResumePosition);
         outState.putBoolean(STATE_PLAYER_FULLSCREEN, mExoPlayerFullscreen);
-        Log.i("loggingsomething",finallink);
         outState.putString("videolink",finallink);
 
         super.onSaveInstanceState(outState);
@@ -183,7 +156,6 @@ qualitydown=findViewById(R.id.qualitydown);
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-                //| View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
@@ -205,15 +177,14 @@ qualitydown=findViewById(R.id.qualitydown);
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(WatchVideo.this);
-            mProgressDialog.setTitle("Video");
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show();
+         progressBar.setVisibility(View.VISIBLE);
+
+
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            qualitysetter=0;
             finallink=null;
             storinggoogleurls.clear();
             storingquality.clear();
@@ -222,71 +193,57 @@ qualitydown=findViewById(R.id.qualitydown);
                  link = getIntent().getStringExtra("link");
                 else
                     link=nextlink;
+                Log.i("linkinglink",link);
                 animename=getIntent().getStringExtra("animename");
-              //  animelink=link;
                 imagelink=getIntent().getStringExtra("imagelink");
-          //      siz=Integer.parseInt(getIntent().getStringExtra("size"));
                 int gettingindex=link.lastIndexOf("-");
-                 epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
-                Log.i("templog",String.valueOf(epno));
-           //    s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
-                  Log.i("templog",String.valueOf(s));
+                epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
+               s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
                 if(link.equals("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
                     mBlogDocument=Jsoup.connect("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
                 else
                  mBlogDocument = Jsoup.connect(link).get();
-                Log.i("blabla", link);
+                previousvideolink=mBlogDocument.select("div[class=anime_video_body_episodes_l]").select("a").attr("abs:href");
+                nextvideolink=mBlogDocument.select("div[class=anime_video_body_episodes_r]").select("a").attr("abs:href");
 
-                //    Log.i("soja",String.valueOf(mBlogDocument));
-                // Using Elements to get the Meta data
-                //      Elements mElementDataSize = mBlogDocument.select("div[class=author-date]");
                 Elements mElementDataSize = mBlogDocument.select("iframe");
                 Elements mElement = mBlogDocument.select("span[class=btndownload]");
-              //  Log.i("mataana", String.valueOf(mElement.size()));
                 x = mElementDataSize.attr("src");
                 if(mElementDataSize.size()==0)
                 {
 Elements elements=mBlogDocument.select("li[class=mp4]").select("a");
-String value=elements.attr("data-video");
 
-l=value;
+l=elements.attr("data-video");;
                 }
              else{
-              //Deleted Code Comes here
                     l = "https:" + x;
                     String vidstreamlink=mElementDataSize.attr("src");
-                  //  System.out.println(vidstreamlink);
                     int abc=vidstreamlink.indexOf("id=");
                     int k=abc;
                     while(vidstreamlink.charAt(k)!='=')
                         k++;
                     k++;
-                    while(vidstreamlink.charAt(k)!='=')
+                    while(vidstreamlink.charAt(k)!='&')
                         k++;
-                    String sub=vidstreamlink.substring(abc,k);
+                     id=vidstreamlink.substring(abc,k);
 
-                    String downloadlink="https://vidstream.co/download?"+sub;
+                    String downloadlink="https://vidstream.co/download?"+id;
+
                     org.jsoup.nodes.Document reacheddownloadlink=Jsoup.connect(downloadlink).timeout(0).get();
-                  //  Elements gettingdownloadlink=reacheddownloadlink.select("div[class=dowload]").select("a");
                     Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
-        //            Log.i("sizeof", String.valueOf(elements1.size()));
-//Log.i("sahihaiyanhi",elements1.attr("href"));
                     while (elements1.eq(qualitysetter).attr("href").contains("googlevideo")
                           ||elements1.eq(qualitysetter).attr("href").contains("googleuser")
                             )
                     { storinggoogleurls.add(elements1.eq(qualitysetter).attr("href"));
-                   // storingquality.add(String.valueOf(elements1.eq(i).text()));
                         String x=String.valueOf(elements1.eq(qualitysetter).text());
                         String c=new StringBuffer(x.substring(10,15)).toString();
                         storingquality.add(c);
                         qualitysetter++;}
                         qualitysetter--;
-      //                  Log.i("testing",String.valueOf(qualitysetter));
 
                         if (qualitysetter == -1) {
                             qualitysetter = 0;
 
-    //                        Log.i("NHI CHALA", elements1.eq(qualitysetter).attr("href"));
                             org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
 
                             Elements e = rapidvideo.select("div[class=video]");
@@ -297,6 +254,7 @@ l=value;
                                 qualitysetter=-1;
                                 for (int m = 0; m < f.size(); m++) {
                                     storinggoogleurls.add(f.eq(m).attr("href"));
+
                                     String p=f.eq(m).select("span").html();
                                     int index=p.indexOf(" ");
 
@@ -307,7 +265,6 @@ l=value;
                                 finallink=f.eq(qualitysetter).attr("href");
                                 current=qualitysetter;
                             }
-                            //Log.i("loggingrapidvideo", finallink);
                         }
                         }
 
@@ -317,23 +274,15 @@ l=value;
 
                     finallink = elements1.eq(qualitysetter).attr("href");
                     current=qualitysetter;
-  //                  Log.i("sahihaiyanhi", elements1.eq(qualitysetter ).attr("href"));
-//for(int j=0;j<storingquality.size();j++)
-//{
-  //  Log.i("loggingurl",storinggoogleurls.get(j));
-   // Log.i("loggingquality",storingquality.get(j));
-//}
                     Log.i("zxc", finallink);
                         } }
-             //   }   catch (IOException e) {
-            //        e.printStackTrace();
-            //    }
+
                 } catch (IOException e1) {
                 e1.printStackTrace();
             }
+
             if(finallink==null) {
                 String rapid = mBlogDocument.select("li[class=rapidvideo]").select("a").attr("data-video");
-               Log.i("linkis", rapid);
                 if (rapid != null&&rapid.contains("rapidvideo")) {
                     try
 
@@ -346,16 +295,46 @@ l=value;
                         storingquality.add(scrapingrapidvideo.select("video[id=videojs]").select("source").attr("title"));
                         qualitysetter++;
                         current=qualitysetter;
-
                         finallink = rapidvideolink;
-                     //   Log.i("rapidvideolink is ", rapidvideolink);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
+
+                 if(finallink==null)
+            {
+                String vidcn=mBlogDocument.select("li[class=vidcdn]").select("a").attr("data-video");
+                if(vidcn!=null&&vidcn.contains("load.php"))
+                {
+                    try
+                    {
+                        Document scrapingvidcdn=Jsoup.connect(vidcn).get();
+                        String html=scrapingvidcdn.html();
+                        int indexoffile=html.indexOf("file:");
+                        String link="";
+                        while(html.charAt(indexoffile)!='h')
+                            indexoffile++;
+                        while(html.charAt(indexoffile)!='\'')
+                        {
+                            link=link+html.charAt(indexoffile);
+                            indexoffile++;
+                        }
+                        if(!link.contains("m3u8")) {
+                            finallink = link;
+                            qualitysetter=-1;
+                            qualitysetter++;
+                            current=qualitysetter;
+                        storinggoogleurls.add(finallink);
+                        storingquality.add("Unknown");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                    }
             if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                // only for marshmellow and lower versions
                 Connection.Response response = null;
                 try {
                     response = Jsoup.connect(finallink).followRedirects(false).execute();
@@ -363,7 +342,6 @@ l=value;
                     e.printStackTrace();
                 }
                 if (response != null) {
-               //     Log.i("loggingredirectedlink",response.header("location"));
                     finallink=response.header("location");
 
                 }
@@ -376,10 +354,7 @@ l=value;
           public void run() {
               title.setText(animename+" Episode "+epno);
               title.setVisibility(View.VISIBLE);
-              mProgressDialog.dismiss();
-              //     RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.act_recyclerview);
 
-//finallink="https://r6---sn-cvh76n7k.googlevideo.com/videoplayback?id=36560fbb45884d3a&itag=37&source=picasa&begin=0&requiressl=yes&mm=30&mn=sn-cvh76n7k&ms=nxu&mv=m&pl=24&sc=yes&ei=_D_sW72LN8HR4QKq14bACA&susc=ph&app=fife&mime=video/mp4&cnr=14&dur=900.075&lmt=1542190445346413&mt=1542209444&title=&ip=1.186.111.17&ipbits=8&expire=1542216732&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,pl,sc,ei,susc,app,mime,cnr,dur,lmt&signature=57EA640DE18D469F12C469A699109F3D70E567A72A3A1A49B20CDDADFF816E61.17A323B0C27E5D26EFB96CD4DB6409867ECF7CDF72A7646B500DA63E680A4171&key=us0";
 
               if(finallink==null)
               {
@@ -392,14 +367,12 @@ l=value;
               else{
                   MediaSource vediosource = new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
                   simpleExoPlayer.prepare(vediosource);
-                  //    videoView.setVideoURI(Uri.parse(finallink));
 
                   playerView.getPlayer().setPlayWhenReady(true);
 
                   qualitydown.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-                         // Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
 
                           qualitysetter--;
                           if(qualitysetter<0)
@@ -408,11 +381,6 @@ l=value;
                           else
                           {
                               long t=playerView.getPlayer().getCurrentPosition();
-                        //      Log.i("loggintime",String.valueOf(t));
-                        //      Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
-
-                              //     playerView.getPlayer().release();
-                              //          simpleExoPlayer.stop();
                               MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
                               simpleExoPlayer.prepare(vediosource);
                               playerView.getPlayer().setPlayWhenReady(true);
@@ -424,7 +392,6 @@ l=value;
                   qualityup.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-                   //       Log.i("loggingqualitysetter",String.valueOf(qualitysetter));
 
                           qualitysetter++;
                           if(qualitysetter>=storinggoogleurls.size())
@@ -435,10 +402,6 @@ l=value;
                           else
                           {
                               long t=playerView.getPlayer().getCurrentPosition();
-                              // playerView.getPlayer().release();
-                         //     Log.i("loggintime",String.valueOf(t));
-//Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
-                              //        simpleExoPlayer.stop();
 
                               MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
                               simpleExoPlayer.prepare(vediosource);
@@ -452,7 +415,7 @@ l=value;
                   qualitychanger.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View view) {
-                          AlertDialog.Builder builder = new AlertDialog.Builder(WatchVideo.this);
+                          AlertDialog.Builder builder = new AlertDialog.Builder(WatchVideo.this,AlertDialog.THEME_HOLO_LIGHT);
                           builder.setTitle("Quality")
                                   .setItems(a, new DialogInterface.OnClickListener() {
                                       public void onClick(DialogInterface dialog, int which) {
@@ -461,10 +424,7 @@ l=value;
                                           if(current!=which)
                                           {
                                           long t=playerView.getPlayer().getCurrentPosition();
-                                          // playerView.getPlayer().release();
-                                          //     Log.i("loggintime",String.valueOf(t));
-//Log.i("loggingurl",storinggoogleurls.get(qualitysetter));
-                                          //        simpleExoPlayer.stop();
+
                                             current=which;
                                           MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(which)));
                                           simpleExoPlayer.prepare(vediosource);
@@ -498,24 +458,25 @@ l=value;
                        {
                            int index=link.lastIndexOf("-");
                            episodeno=Integer.parseInt(link.substring(index+1,link.length()));
-                       //    Log.i("episodecurrent",String.valueOf(episodeno));
                            episodeno=episodeno+1;
-                           if(episodeno>siz)
+                           if(nextvideolink==null||nextvideolink.equals(""))
                                Toast.makeText(getApplicationContext(),"Last Episode",Toast.LENGTH_SHORT).show();
                            else
                            {
-                               //   Log.i("episodeafterchange",String.valueOf(x));
-                               nextlink = link.substring(0, index + 1);
-                               nextlink = nextlink + episodeno;
+
+                               nextlink=nextvideolink;
                                String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
-                           //    Log.i("loggingsql",z);
                                recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
 simpleExoPlayer.stop();
                                recent.execSQL("INSERT INTO anime VALUES("+z+");");
-                           //    Log.i("nextlinkis", nextlink);
                                new Description(getApplicationContext()).execute();
                            }
                        }
+                          if (playbackState == ExoPlayer.STATE_BUFFERING){
+                              progressBar.setVisibility(View.VISIBLE);
+                          } else {
+                              progressBar.setVisibility(View.INVISIBLE);
+                          }
                       }
 
                       @Override
@@ -558,77 +519,30 @@ simpleExoPlayer.stop();
               }
           }
       });
-            String  searchurl="https://www04.gogoanimes.tv//search.html?keyword="+animename;
-            try {
-                org.jsoup.nodes.Document searching = Jsoup.connect(searchurl).get();
-                Elements elements=searching.select("div[class=main_body]").select("div[class=last_episodes]").select("ul[class=items]").select("li");
-         //       Log.i("haiyanhi",String.valueOf(elements.size()));
-                for(int i=0;i<elements.size();i++)
-                {
-                    String animelink=elements.select("div[class=img]").eq(i).select("a").attr("abs:href");
-                    String anime=elements.select("div[class=img]").eq(i).select("a").attr("title");
-                    if(anime.equals(animename))
-                        break;
-                   // String imagelink=elements.select("div[class=img]").eq(i).select("img").attr("src");
-
-
-                 //   Log.i("working",animelink);
-                }
-                 searching = Jsoup.connect(link).get();
-             //   Log.i("zyx",String.valueOf(searching));
-                 elements=searching.select("div[class=anime_video_body]").select("ul[id=episode_page]").select("li");
-             //   Log.i("checkinga",String.valueOf(elements.size()));
-             //   for(int i=0;i<elements.size();i++)
-           //         Log.i("ptanhikya",String.valueOf(elements.select("a").eq(i).html()));
-                String a=String.valueOf(elements.select("a").eq(elements.size()-1).html());
-                StringBuffer b=new StringBuffer();
-           //     Log.i("ptanhikya",String.valueOf(a));
-                for(int i=0;i<a.length();i++)
-                {
-                    if(a.charAt(i)=='-')
-                    {
-                        for(int j=i+1;j<a.length();j++)
-                            b.append(a.charAt(j));
-                    }
-                }
-               siz= Integer.parseInt(b.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
             return null;
    }
-   //catch (IOException e) {
-     //           e.printStackTrace();
-     //       }
-        //    return null;
-      //  }
 
         @Override
         protected void onPostExecute(Void result) {
-            // Set description into TextView
+            progressBar.setVisibility(View.GONE);
             nextepisode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     int index=link.lastIndexOf("-");
                      episodeno=Integer.parseInt(link.substring(index+1,link.length()));
-              //      Log.i("episodecurrent",String.valueOf(episodeno));
                     episodeno=episodeno+1;
-                    if(episodeno>siz)
+                    Log.i("nextvideolink",nextvideolink);
+                   if(nextvideolink==null||nextvideolink.equals(""))
                         Toast.makeText(getApplicationContext(),"Last Episode",Toast.LENGTH_SHORT).show();
                     else
                     {
-                        //   Log.i("episodeafterchange",String.valueOf(x));
-                        nextlink = link.substring(0, index + 1);
-                        nextlink = nextlink + episodeno;
+
+                        nextlink=nextvideolink;
                         String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
-                   //     Log.i("loggingsql",z);
                         recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
 
                         recent.execSQL("INSERT INTO anime VALUES("+z+");");
-                   //     Log.i("nextlinkis", nextlink);
                         new Description(getApplicationContext()).execute();
                     }
                 }
@@ -639,29 +553,24 @@ simpleExoPlayer.stop();
 
                     int index=link.lastIndexOf("-");
                     int episodeno=Integer.parseInt(link.substring(index+1,link.length()));
-                  //  Log.i("episodecurrent",String.valueOf(episodeno));
+
                     episodeno=episodeno-1;
-                    if(episodeno<1)
+                   if(previousvideolink==null||previousvideolink.equals(""))
+
                         Toast.makeText(getApplicationContext(),"First Episode",Toast.LENGTH_SHORT).show();
                     else
                     {
-                        //   Log.i("episodeafterchange",String.valueOf(x));
-                        nextlink = link.substring(0, index + 1);
-                        nextlink = nextlink + episodeno;
+
+                        nextlink=previousvideolink;
                         String z="'"+ animename+"','Episode "+episodeno+"','"+nextlink+"','"+imagelink+"'";
-                   //     Log.i("loggingsql",z);
                         recent.execSQL("delete from anime where EPISODELINK='"+nextlink+"'");
                         recent.execSQL("INSERT INTO anime VALUES("+z+");");
-                   //     Log.i("nextlinkis", nextlink);
                         new Description(getApplicationContext()).execute();
                     }
                 }
             });
         }
     }
-
-
-
 @Override
 public void onPause()
 {
@@ -681,7 +590,6 @@ public  void  onResume()
         simpleExoPlayer.prepare(vediosource);}
     playerView.getPlayer().setPlayWhenReady(true);
     playerView.getPlayer().seekTo(time);
-
 }
 
     @Override

@@ -3,14 +3,16 @@ package com.stuffbox.webscraper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
 import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class Recent extends AppCompatActivity {
     private ArrayList<String> mAnimeList = new ArrayList<>();
@@ -32,7 +34,8 @@ public class Recent extends AppCompatActivity {
         //resultSet.
 
        // Log.i("soja",resultSet.getString(0));
-               for(int i=resultSet.getCount()-1;i>=0;i--) {
+               for(int i=resultSet.getCount()-1,count=0;i>=0;i--) {
+
                    mAnimeList.add(resultSet.getString(0));
                    mEpisodeList.add(resultSet.getString(1));
                    mSiteLink.add(resultSet.getString(2));

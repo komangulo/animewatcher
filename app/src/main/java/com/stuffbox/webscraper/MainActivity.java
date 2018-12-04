@@ -1,37 +1,32 @@
 package com.stuffbox.webscraper;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.BitSet;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -46,12 +41,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     String searchurl;
     int flag=1;
     RecyclerView mRecyclerView;
+    ProgressBar progressBar;
     private ArrayList<String> mAnimeList1 = new ArrayList<>();
     private ArrayList<String> mSiteLink1 = new ArrayList<>();
     private ArrayList<String> mImageLink1 = new ArrayList<>();
     private  ArrayList<String> mEpisodeList1=new ArrayList<>();
     Searching x=new Searching();
-    Toolbar  toolbar;
+    LinearLayout noanime;
+    Toolbar toolbar;
     DataAdapter mDataAdapter;
     animefinderadapter   DataAdapter;
     private  ArrayList<String> mEpisodeList=new ArrayList<>();
@@ -67,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             linearLayout1.setVisibility(View.VISIBLE);
             RecyclerView recyclerView=findViewById(R.id.act_recyclerview);
             recyclerView.setVisibility(View.GONE);
+
         }
         else
         {
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             String x = getIntent().getStringExtra("sentfromhere");
             SQLiteDatabase recent = openOrCreateDatabase("recent", MODE_PRIVATE, null);
             recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
+             progressBar=findViewById(R.id.progress);
             if (x != null) {
                 finish();
                 Intent intent = new Intent(this, this.getClass());
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
             toolbar = findViewById(R.id.tool);
             setSupportActionBar(toolbar);
-
+            noanime=findViewById(R.id.noanime);
 
         }
     }
@@ -140,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextChange(String newText) {
         newText=newText.toLowerCase();
+        noanime.setVisibility(View.GONE);
 
         if(newText.length()>=3)
         {
@@ -152,9 +152,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         }
 
-        if(newText.isEmpty())
+        if(newText.length()<=2)
         {
+            if(x.getStatus()==AsyncTask.Status.RUNNING)
+                x.cancel(true);
+            RecyclerView  recyclerView=findViewById(R.id.recyclerview);
+            recyclerView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
+
         }
         return false;
     }
@@ -164,18 +170,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            RecyclerView  recyclerView=findViewById(R.id.recyclerview);
 
+            recyclerView.setVisibility(View.GONE);
 
-
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
+
                 org.jsoup.nodes.Document searching = Jsoup.connect(searchurl).get();
                 //   Log.i("asas",String.valueOf(searching));
                 DataAdapter=new animefinderadapter();
                 DataAdapter.notifyItemRangeRemoved(0,mAnimeList.size());
+
 
                 mAnimeList.clear();
                 mSiteLink.clear();
@@ -207,18 +217,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected void onPostExecute(Void result) {
             RecyclerView  recyclerView=findViewById(R.id.recyclerview);
-            recyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+
             //   mProgressDialog.dismiss();
-           DataAdapter = new animefinderadapter(getApplicationContext(), mAnimeList, mSiteLink, mImageLink,mEpisodeList);
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setDrawingCacheEnabled(true);
-            recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-            recyclerView.setItemViewCacheSize(30);
+            if(mAnimeList.size()==0)
+                noanime.setVisibility(View.VISIBLE) ;
+            else {
+                recyclerView.setVisibility(View.VISIBLE);
 
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.setAdapter(DataAdapter);
+                DataAdapter = new animefinderadapter(getApplicationContext(), mAnimeList, mSiteLink, mImageLink, mEpisodeList);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setDrawingCacheEnabled(true);
+                recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                recyclerView.setItemViewCacheSize(30);
 
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setAdapter(DataAdapter);
+            }
         }
     }
     private class Description extends AsyncTask<Void, Void, Void> {
@@ -246,6 +262,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 for (int i = 0; i < mElementSize; i++) {
                     Elements mElementAnimeName=mBlogDocument.select("p[class=name]").select("a").eq(i);
                     String mAnimenName= mElementAnimeName.text();
+                    if(mAnimenName.contains("[email protected]"))
+                       mAnimenName= mAnimenName.replace("[email protected]","IDOLM@STER");
                     //      Log.i("zy",mAnimenName);
                     Elements mElementAnimeLink= mBlogDocument.select("p[class=name]").select("a").eq(i);
                     String mlink=mElementAnimeLink.attr("abs:href");
