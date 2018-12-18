@@ -66,7 +66,6 @@ ImageButton nextepisode,prevepisode;
     String link;
     int s;
     SQLiteDatabase recent;
-    AlertDialog dialog;
     ProgressBar progressBar;
     int qualitysetter=0;
     private final String STATE_RESUME_WINDOW = "resumeWindow";
@@ -83,7 +82,6 @@ ImageButton nextepisode,prevepisode;
     TextView title;
     String nextvideolink=null,previousvideolink=null;
     int epno;
-    ImageButton qualityup,qualitydown;
     String animename,imagelink;
     private  ArrayList<String> storingquality=new ArrayList<>();
     com.google.android.exoplayer2.upstream.DataSource.Factory datasourcefactory;
@@ -114,10 +112,8 @@ ImageButton nextepisode,prevepisode;
 
 
         }
-qualitydown=findViewById(R.id.qualitydown);
         nextepisode=findViewById(R.id.exo_nextvideo);
         prevepisode=findViewById(R.id.exo_prevvideo);
-        qualityup=findViewById(R.id.qualityup);
             decorView = getWindow().getDecorView();
             uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -369,53 +365,11 @@ l=elements.attr("data-video");;
                   simpleExoPlayer.prepare(vediosource);
 
                   playerView.getPlayer().setPlayWhenReady(true);
-
-                  qualitydown.setOnClickListener(new View.OnClickListener() {
-                      @Override
-                      public void onClick(View v) {
-
-                          qualitysetter--;
-                          if(qualitysetter<0)
-                          { Toast.makeText(context,"Least quality",Toast.LENGTH_SHORT).show();
-                              qualitysetter++;}
-                          else
-                          {
-                              long t=playerView.getPlayer().getCurrentPosition();
-                              MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
-                              simpleExoPlayer.prepare(vediosource);
-                              playerView.getPlayer().setPlayWhenReady(true);
-                              playerView.getPlayer().seekTo(t);
-
-                          }
-                      }
-                  });
-                  qualityup.setOnClickListener(new View.OnClickListener() {
-                      @Override
-                      public void onClick(View v) {
-
-                          qualitysetter++;
-                          if(qualitysetter>=storinggoogleurls.size())
-                          {
-                              Toast.makeText(context,"Max Quality",Toast.LENGTH_SHORT).show();
-                              qualitysetter--;
-                          }
-                          else
-                          {
-                              long t=playerView.getPlayer().getCurrentPosition();
-
-                              MediaSource vediosource=    new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(storinggoogleurls.get(qualitysetter)));
-                              simpleExoPlayer.prepare(vediosource);
-                              playerView.getPlayer().setPlayWhenReady(true);
-                              playerView.getPlayer().seekTo(t);
-                          }
-
-                      }
-                  });
                    final String[] a= storingquality.toArray(new String[0]);
                   qualitychanger.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View view) {
-                          AlertDialog.Builder builder = new AlertDialog.Builder(WatchVideo.this,AlertDialog.THEME_HOLO_LIGHT);
+                          AlertDialog.Builder builder = new AlertDialog.Builder(WatchVideo.this,AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                           builder.setTitle("Quality")
                                   .setItems(a, new DialogInterface.OnClickListener() {
                                       public void onClick(DialogInterface dialog, int which) {
