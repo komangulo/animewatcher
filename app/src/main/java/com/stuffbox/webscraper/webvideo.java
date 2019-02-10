@@ -42,7 +42,7 @@ public class webvideo extends Activity {
         webView.getSettings().setSaveFormData(true);
 
         url = getIntent().getStringExtra("videostreamlink");
-       // Log.i("checkingstring",url);
+       Log.i("checkingstring",url);
        // webView.setWebViewClient(new MyBrowser());
       //  webView.getSettings().setJavaScriptEnabled(true);
       //  webView.getSettings().setLoadsImagesAutomatically(true);

@@ -47,7 +47,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -75,6 +86,7 @@ ImageButton nextepisode,prevepisode;
     private ArrayList<String> storinggoogleurls=new ArrayList<>();
     private boolean mExoPlayerFullscreen = false;
     int episodeno;
+    org.jsoup.nodes.Document reacheddownloadlink;
     int current;
     SimpleExoPlayer simpleExoPlayer;
     org.jsoup.nodes.Document mBlogDocument ;
@@ -195,8 +207,8 @@ ImageButton nextepisode,prevepisode;
                 int gettingindex=link.lastIndexOf("-");
                 epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
                s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
-                if(link.equals("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
-                    mBlogDocument=Jsoup.connect("https://www8.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
+                if(link.equals("https://www11.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
+                    mBlogDocument=Jsoup.connect("https://www11.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
                 else
                  mBlogDocument = Jsoup.connect(link).get();
                 previousvideolink=mBlogDocument.select("div[class=anime_video_body_episodes_l]").select("a").attr("abs:href");
@@ -225,7 +237,7 @@ l=elements.attr("data-video");;
 
                     String downloadlink="https://vidstream.co/download?"+id;
 
-                    org.jsoup.nodes.Document reacheddownloadlink=Jsoup.connect(downloadlink).timeout(0).get();
+                     reacheddownloadlink=Jsoup.connect(downloadlink).timeout(0).get();
                     Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
                     while (elements1.eq(qualitysetter).attr("href").contains("googlevideo")
                           ||elements1.eq(qualitysetter).attr("href").contains("googleuser")
@@ -240,7 +252,7 @@ l=elements.attr("data-video");;
                         if (qualitysetter == -1) {
                             qualitysetter = 0;
 
-                            org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter).attr("href")).get();
+                            org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter+1).attr("href")).get();
 
                             Elements e = rapidvideo.select("div[class=video]");
                             if(e.size()>0)
@@ -330,19 +342,38 @@ l=elements.attr("data-video");;
                     }
                 }
                     }
+            disableSSLCertificateVerify();
+
             if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+
                 Connection.Response response = null;
                 try {
+                    Log.i("SOJA",finallink);
                     response = Jsoup.connect(finallink).followRedirects(false).execute();
-                } catch (IOException e) {
+                    if (response != null) {
+                        finallink=response.header("location");
+
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (response != null) {
-                    finallink=response.header("location");
 
-                }
 
             }
+       if(finallink==null||finallink.equals(""))
+       {
+            Elements elements1 = reacheddownloadlink.select("div[class=dowload]").select("a");
+    Log.i("testinglink",elements1.eq(0).attr("href"));
+            finallink =elements1.eq(0).attr("href");
+            int index=finallink.indexOf("&title");
+            finallink=finallink.substring(0,index);
+            storinggoogleurls.clear();
+           storingquality.clear();
+           storinggoogleurls.add(finallink);
+            storingquality.add("Standard");
+
+            current=0;
+        }
 
 
             runOnUiThread(new Runnable() {
@@ -361,7 +392,9 @@ l=elements.attr("data-video");;
                   finish();
               }
               else{
+
                   MediaSource vediosource = new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse(finallink));
+           //       MediaSource vediosource = new ExtractorMediaSource.Factory(datasourcefactory).createMediaSource(Uri.parse("st1.mload.stream/user1342/11775589bc3e9d530915a8d19ee725ce/EP.2.mp4?token=PUZrOjj1jEHxlTovHPkZqA&expires=1545254900"));
                   simpleExoPlayer.prepare(vediosource);
 
                   playerView.getPlayer().setPlayWhenReady(true);
@@ -445,11 +478,11 @@ simpleExoPlayer.stop();
 
                       @Override
                       public void onPlayerError(ExoPlaybackException error) {
+
                           Toast.makeText(context, "Cannot play video trying other method", Toast.LENGTH_SHORT).show();
                           playerView.getPlayer().release();
-
-                          Intent intent = new Intent(context, webvideo.class);
-                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                         Intent intent = new Intent(context, webvideo.class);
+                       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                           intent.putExtra("videostreamlink", l);
                           startActivity(intent);
                           finish();
@@ -523,6 +556,41 @@ simpleExoPlayer.stop();
                     }
                 }
             });
+        }
+    }
+    private static void disableSSLCertificateVerify() {
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        X509Certificate[] myTrustedAnchors = new X509Certificate[0];
+                        return myTrustedAnchors;
+                    }
+
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+
+            sc.init(null, trustAllCerts, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
     }
 @Override

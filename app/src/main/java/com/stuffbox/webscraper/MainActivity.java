@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     //rivate static final Object Context = ;
     private ProgressDialog mProgressDialog;
     // private String url = "https://www.yudiz.com/blog/";
-    private  String url= "https://www8.gogoanimes.tv/";
+    private  String url= "https://www11.gogoanimes.tv/";
     private ArrayList<String> mAnimeList = new ArrayList<>();
     private ArrayList<String> mSiteLink = new ArrayList<>();
     private ArrayList<String> mImageLink = new ArrayList<>();
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if(newText.length()>=3)
         {
             mRecyclerView.setVisibility(View.GONE);
-            searchurl = "https://www8.gogoanimes.tv//search.html?keyword=" + newText.toString();
+            searchurl = "https://www11.gogoanimes.tv//search.html?keyword=" + newText.toString();
             if(x.getStatus()==AsyncTask.Status.RUNNING)
                 x.cancel(true);
             x=new Searching();
