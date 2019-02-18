@@ -77,13 +77,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         else
         {
+            progressBar=findViewById(R.id.progress);
+
 
             new Description().execute();
 
             String x = getIntent().getStringExtra("sentfromhere");
             SQLiteDatabase recent = openOrCreateDatabase("recent", MODE_PRIVATE, null);
             recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
-             progressBar=findViewById(R.id.progress);
             if (x != null) {
                 finish();
                 Intent intent = new Intent(this, this.getClass());
@@ -252,11 +253,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog( MainActivity.this);
-            mProgressDialog.setTitle("Anime");
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
 
         }
 
@@ -310,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setAdapter(mDataAdapter);
-            mProgressDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
 
         }
     }

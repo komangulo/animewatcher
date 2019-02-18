@@ -251,8 +251,10 @@ l=elements.attr("data-video");;
 
                         if (qualitysetter == -1) {
                             qualitysetter = 0;
-
-                            org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(qualitysetter+1).attr("href")).get();
+                            int ind=0;
+                            while((!elements1.eq(ind).text().equals("Download Rapidvideo") )&&ind<elements1.size())
+                                ind++;
+                            org.jsoup.nodes.Document rapidvideo = Jsoup.connect(elements1.eq(ind).attr("href")).get();
 
                             Elements e = rapidvideo.select("div[class=video]");
                             if(e.size()>0)
