@@ -1,6 +1,7 @@
 package com.stuffbox.webscraper;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -84,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
        // frameLayout=findViewById(R.id.frameLayout);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         appBarLayout.setVisibility(View.VISIBLE);
-
+            SQLiteDatabase recent = openOrCreateDatabase("recent", MODE_PRIVATE, null);
+            recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
         progressBar=findViewById(R.id.progress2);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);

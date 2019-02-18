@@ -1,5 +1,6 @@
 package com.stuffbox.webscraper;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -29,7 +30,7 @@ public class Recent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.animefinder);
         SQLiteDatabase recent=openOrCreateDatabase("recent",MODE_PRIVATE,null);
-        Cursor resultSet = recent.rawQuery("Select * from anime",null);
+        @SuppressLint("Recycle") Cursor resultSet = recent.rawQuery("Select * from anime",null);
         resultSet.moveToLast();
         //resultSet.
 

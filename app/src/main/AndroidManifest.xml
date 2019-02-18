@@ -10,7 +10,7 @@
         android:icon="@drawable/psyduck"
         android:usesCleartextTraffic="true"
 
-        android:label="@string/app_name"
+        android:label="Anime Watcher"
         android:roundIcon="@drawable/psyduck"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
