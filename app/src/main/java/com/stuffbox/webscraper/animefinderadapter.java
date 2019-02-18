@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -97,7 +99,9 @@ public class animefinderadapter extends RecyclerView.Adapter<animefinderadapter.
 
         // holder.imageofanime.se
         // tImageBitmap(mImage.get(position));
-        new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
+        Picasso.get().load(mImageLink.get(position)).into(holder.imageofanime);
+
+    //    new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
         //    holder.imageofanime.setImageBitmap(getBitmapFromURL(mImageLink.get(position)));
         // holder.tv_blog_upload_date.setText(mBlogUploadDateList.get(position));
     }

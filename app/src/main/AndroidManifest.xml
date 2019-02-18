@@ -24,6 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".placeholder"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".WatchVideo"
             android:configChanges="orientation|screenSize"

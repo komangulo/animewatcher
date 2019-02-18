@@ -82,5 +82,6 @@
         android:layout_height="wrap_content"
         android:src="@drawable/sadpsyduck"/>
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

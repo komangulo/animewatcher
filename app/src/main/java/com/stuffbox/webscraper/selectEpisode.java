@@ -141,7 +141,7 @@ Button button=findViewById(R.id.episodeselector);
              //   Log.i("ptanhikya",String.valueOf(x));
 for(int i=1;i<=x;i++)
 {
-    String c ="https://www11.gogoanimes.tv/"+animename+"-episode-"+i;
+    String c ="https://www12.gogoanimes.tv/"+animename+"-episode-"+i;
     mEpisodeList.add(String.valueOf(i));
 
     mSiteLink.add(c);

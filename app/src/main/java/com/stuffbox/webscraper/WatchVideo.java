@@ -207,8 +207,8 @@ ImageButton nextepisode,prevepisode;
                 int gettingindex=link.lastIndexOf("-");
                 epno=Integer.parseInt(link.substring(gettingindex+1,link.length()));
                s=Integer.parseInt(getIntent().getStringExtra("noofepisodes"));
-                if(link.equals("https://www11.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
-                    mBlogDocument=Jsoup.connect("https://www11.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
+                if(link.equals("https://www12.gogoanimes.tv/ansatsu-kyoushitsu-tv--episode-1"))
+                    mBlogDocument=Jsoup.connect("https://www12.gogoanimes.tv/ansatsu-kyoushitsu-episode-1").get();
                 else
                  mBlogDocument = Jsoup.connect(link).get();
                 previousvideolink=mBlogDocument.select("div[class=anime_video_body_episodes_l]").select("a").attr("abs:href");

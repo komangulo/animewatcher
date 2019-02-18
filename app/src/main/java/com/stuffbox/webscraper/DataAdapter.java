@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -93,8 +93,8 @@ private Context context;
                 context.getApplicationContext().startActivity(intent);
             }
         });
-
-        new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
+        Picasso.get().load(mImageLink.get(position)).into(holder.imageofanime);
+      //  new Imageloader(mImageLink.get(position),holder.imageofanime).execute();
     }
     @Override
     public int getItemCount() {
