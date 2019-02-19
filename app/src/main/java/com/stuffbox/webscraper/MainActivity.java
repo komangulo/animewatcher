@@ -89,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
             recent.execSQL("CREATE TABLE IF NOT EXISTS anime(Animename VARCHAR,Episodeno VARCHAR,EPISODELINK VARCHAR,IMAGELINK VARCHAR)");
         progressBar=findViewById(R.id.progress2);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(viewPagerAdapter);
+
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         //  FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -110,15 +112,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), AnimeList.class);
                 startActivity(i);
 
-                return false;
-            }
-        });
-        MenuItem menuItem = menu.findItem(R.id.recent);
-        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(getApplicationContext(), Recent.class);
-                startActivity(intent);
                 return false;
             }
         });
@@ -249,5 +242,13 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setAdapter(DataAdapter);
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!(viewPager.getCurrentItem()==0))
+            viewPager.setCurrentItem(0);
+        else
+        super.onBackPressed();
     }
 }

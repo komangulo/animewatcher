@@ -10,11 +10,7 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView"
         />
-<item
-    android:id="@+id/recent"
-    android:icon="@drawable/time"
-    app:showAsAction="always"
-    android:title="recent"/>
+
     <item
         android:id="@+id/animelist"
         android:title="Anime List"/>

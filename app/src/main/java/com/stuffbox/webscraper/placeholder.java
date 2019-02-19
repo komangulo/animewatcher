@@ -135,15 +135,7 @@ public class placeholder extends AppCompatActivity implements SearchView.OnQuery
                 return false;
             }
         });
-        MenuItem menuItem=menu.findItem(R.id.recent);
-        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent=new Intent(getApplicationContext(),Recent.class);
-                startActivity(intent);
-                return false;
-            }
-        });
+
         SearchView searchView=(SearchView) MenuItemCompat.getActionView(search);
         searchView.setOnQueryTextListener(this);
         return true;

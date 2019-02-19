@@ -19,13 +19,17 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
 
     }
-    else
+    else if(position==0)
         fragment=AnimeFragment.newInstance("https://www12.gogoanimes.tv/");
+    else
+    {
+        fragment=new RecentFragment();
+    }
     return  fragment;
     }
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
     @Override
     public CharSequence getPageTitle(int position) {
@@ -38,6 +42,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         {
             title = "DUB";
         }
+        else if(position==2)
+        {
+            title= "RECENT";
+        }
+
 
         return title;
     }

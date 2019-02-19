@@ -2,6 +2,7 @@ package com.stuffbox.webscraper;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,7 @@ public class AnimeFragment extends Fragment {
     private ArrayList<String> dubImageLink = new ArrayList<>();
     private  ArrayList<String> dubEpisodeList=new ArrayList<>();
     View view;
+    int flag=0;
     DataAdapter mDataAdapter;
 
     RecyclerView mRecyclerView;
@@ -45,13 +48,15 @@ public class AnimeFragment extends Fragment {
        }
    }
 
+
+
     ProgressBar progressBar;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.dublayout,container,false);
-        progressBar=view.findViewById(R.id.progress);
-        readBundle(getArguments());
-        new Dub().execute();
+
+            new Dub().execute();
+
         return view;
     }
 
@@ -61,6 +66,9 @@ public class AnimeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            readBundle(getArguments());
+            progressBar=view.findViewById(R.id.progress);
+
             progressBar.setVisibility(View.VISIBLE);
 
         }
@@ -69,7 +77,8 @@ public class AnimeFragment extends Fragment {
         protected Void  doInBackground(Void... params) {
             try {
                 //    Log.d("chalja",url);
-                org.jsoup.nodes.Document mBlogDocument = Jsoup.connect(url).get();
+                org.jsoup.nodes.Document mBlogDocument;
+                    mBlogDocument  = Jsoup.connect(url).get();
                 //      Log.i("soja",String.valueOf(mBlogDocument));
                 Elements mElementDataSize=mBlogDocument.select("div[class=last_episodes loaddub]").select("ul[class=items]").select("li");
                 int mElementSize = mElementDataSize.size();
@@ -118,5 +127,10 @@ public class AnimeFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
 
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
