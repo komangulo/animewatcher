@@ -57,19 +57,15 @@ public class RecentFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onPause() {
-        mAnimeList.clear();
-        mEpisodeList.clear();
-        mSiteLink.clear();
-        mImageLink.clear();
-        super.onPause();
-    }
+
 
     @Override
     public void onResume() {
         SQLiteDatabase recent=getContext().openOrCreateDatabase("recent",Context.MODE_PRIVATE,null);
-
+        mAnimeList.clear();
+        mEpisodeList.clear();
+        mSiteLink.clear();
+        mImageLink.clear();
         resultSet = recent.rawQuery("Select * from anime",null);
         resultSet.moveToLast();
         for(int i=resultSet.getCount()-1,count=0;i>=0;i--) {

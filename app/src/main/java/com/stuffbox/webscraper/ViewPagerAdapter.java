@@ -13,13 +13,13 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
     Fragment fragment=null;
-    if(position==1)
+    if(position==0)
     {
         fragment=AnimeFragment.newInstance("https://www12.gogoanimes.tv/page-recent-release.html?page=1&type=2");
 
 
     }
-    else if(position==0)
+    else if(position==1)
         fragment=AnimeFragment.newInstance("https://www12.gogoanimes.tv/");
     else
     {
@@ -34,11 +34,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         String title = null;
-        if (position == 0)
+        if (position == 1)
         {
             title = "SUB";
         }
-        else if (position == 1)
+        else if (position == 0)
         {
             title = "DUB";
         }

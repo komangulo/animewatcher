@@ -94,7 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        //  FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            viewPager.setCurrentItem(1);
+
+            //  FragmentTransaction fragmentTransaction = fm.beginTransaction();
       //  fragmentTransaction.replace(R.id.frameLayout, new DubFragment());
       //  fragmentTransaction.commit();
         }
@@ -246,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(!(viewPager.getCurrentItem()==0))
-            viewPager.setCurrentItem(0);
+        if(!(viewPager.getCurrentItem()==1))
+            viewPager.setCurrentItem(1);
         else
         super.onBackPressed();
     }
